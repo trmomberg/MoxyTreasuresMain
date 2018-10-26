@@ -1,0 +1,32 @@
+﻿@model Momberg_SET253_Final.Models.CUser
+@{
+    ViewBag.Title = "Products";
+}
+
+<div class="middle">
+    <h2>Products</h2>
+
+    <div class="section">
+        <a href="@Url.Action("MyProduct", "User")">
+            <img class="icon" src="~/Content/Images/add-icon.png" />
+            <span>click here to add a product</span>
+        </a>
+    </div>
+    @if (Model.ProductList != null)
+    {
+        foreach (Momberg_SET253_Final.Models.CProduct p in Model.ProductList)
+        {
+            <div class="product-small center">
+                @if (p.PrimaryImage != null)
+                {
+                    <a href="@Url.Action("MyProduct", "User", new { id = p.ProductID })">
+                        <div><img class="thumbnail" src="@string.Concat("data:Image/", p.PrimaryImage.GetShortExtension, ";base64,", p.PrimaryImage.BytesBase64)" /></div>
+                    </a>
+                }
+                <div class="center cut-text">@p.Title</div>
+                <div class="center">@p.Price.ToString("$#,###.00")</div>
+                <div class="center">@Html.ActionLink("Edit", "MyProduct", "User", new { id = p.ProductID })</div>
+            </div>
+        }
+    }
+</div>

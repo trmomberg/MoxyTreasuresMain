@@ -1,0 +1,76 @@
+﻿@model Momberg_SET253_Final.Models.CUser
+@{
+    ViewBag.Title = "SignUp";
+}
+
+@using (Html.BeginForm("SignUp", "User", FormMethod.Post))
+{
+<div class="middle">
+    <h2>Sign Up</h2>
+    <p>To sign up for Moxy Treasures, enter your information below to create a profile.</p>
+
+    <div class="Section">
+        <div class="top">@Html.LabelFor(Model => Model.FirstName)</div>
+        <div>@Html.TextBoxFor(Model => Model.FirstName)</div>
+    </div>
+
+    <div class="Section">
+        <div class="top">@Html.LabelFor(Model => Model.LastName)</div>
+        <div>@Html.TextBoxFor(Model => Model.LastName)</div>
+    </div>
+
+    <div class="Section">
+        <div class="top">@Html.LabelFor(Model => Model.intGenderID)</div>
+        <div>@Html.DropDownListFor(Model => Model.intGenderID, new SelectList(Model.GenderList, "Value", "Text", Model.GenderList))</div>
+    </div>
+
+    <div class="Section">
+        <div class="top">@Html.LabelFor(Model => Model.EmailAddress)</div>
+        <div>@Html.TextBoxFor(Model => Model.EmailAddress)</div>
+    </div>
+
+    <div class="Section">
+        <div class="top">@Html.LabelFor(Model => Model.Password)</div>
+        <div>@Html.TextBoxFor(Model => Model.Password)</div>
+    </div>
+
+    <div class="Section">
+        <div class="top">@Html.LabelFor(Model => Model.strCity)</div>
+        <div>@Html.TextBoxFor(Model => Model.strCity)</div>
+    </div>
+
+    <div class="Section">
+        <div class="top">@Html.LabelFor(Model => Model.intStateID)</div>
+        <div>@Html.DropDownListFor(Model => Model.intStateID, new SelectList(Model.StatesList, "Value", "Text", Model.StatesList))</div>
+    </div>
+
+    @if (Model.ActionStatus != Momberg_SET253_Final.Models.CUser.ActionStatusTypes.UserUpdated)
+    {
+        <div class="">
+            <div class="label">&nbsp;</div>
+            <div>
+                <button id="btnSubmit" name="btnSubmit" value="signup" title="Click to sign-up!">Sign-up!</button>
+            </div>
+        </div>
+    }
+    @switch (Model.ActionStatus)
+    {
+        case Momberg_SET253_Final.Models.CUser.ActionStatusTypes.UserUpdated:
+            <div class="Section">
+                <div>Sign-up successful</div>
+            </div>
+            break;
+        case Momberg_SET253_Final.Models.CUser.ActionStatusTypes.UserAlreadyExists:
+            <div class="Section">
+                <div>Email Address already used</div>
+            </div>
+            break;
+    }
+</div>
+}
+    
+    <script>
+        $(document).ready(function () {
+            $("#FirstName").focus();
+        });
+    </script>

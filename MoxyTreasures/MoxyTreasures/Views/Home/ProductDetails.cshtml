@@ -1,0 +1,45 @@
+﻿@model Momberg_SET253_Final.Models.CHome    
+@{
+    ViewBag.Title = "ProductDetails";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="middle">
+    <h2>Product Details</h2>
+
+    <link href="~/Content/Main.css" rel="stylesheet" />
+    @using (Html.BeginForm("ProductDetails", "product", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Scripts.Render("~/App_Start/BundleConfig")
+        <div id="my-product">
+            <div id="product-edit">
+                <div class="section">
+                    <div class="item wider-items">
+                        <div>@Html.LabelFor(Model => Model.Products[0].Title)</div>
+                        <div width="100%">@Html.TextBoxFor(Model => Model.Products[0].Title, new { @readonly = true })</div>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="item">
+                        <div>@Html.LabelFor(Model => Model.Products[0].Price)</div>
+                        <div width="6em" border="2px solid black">@Html.TextBoxFor(Model => Model.Products[0].Price, new { @readonly = true })</div>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="item wider-items" style="">
+                        <div>@Html.LabelFor(Model => Model.Products[0].Description)</div>
+                        <div width="100%" id="txtarea">@Html.TextAreaFor(Model => Model.Products[0].Description, new { rows = "5", @readonly = true, @resize = false })</div>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.Products[0].PrimaryImage != null)
+            {
+                <div id="primary-image">
+                    <div><img class="product-large" src="@string.Concat("data:Image/", Model.Products[0].PrimaryImage.GetShortExtension, ";base64,", Model.Products[0].PrimaryImage.BytesBase64)" /></div>
+                </div>
+            }
+        </div>
+    }
+</div>
+    

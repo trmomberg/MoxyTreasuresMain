@@ -1,0 +1,89 @@
+﻿@model Momberg_SET253_Final.Models.CHome
+@{
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<div class="middle">
+    <h2>Home</h2>
+    @if (Model.CurrentUser.UserID > 0)
+    {
+        if (Model.Products != null)
+        {
+            foreach (Momberg_SET253_Final.Models.CProduct p in Model.Products)
+            {
+            <div class="product-small center">
+
+                @if (p.PrimaryImage != null)
+                {
+                <a href="@Url.Action("ProductDetails", "Home", new { id = p.ProductID })">
+                    <div><img class="thumbnail" src="@string.Concat("data:Image/", p.PrimaryImage.GetShortExtension, ";base64,", p.PrimaryImage.BytesBase64)" /></div>
+                </a>
+                }
+                <div class="center cut-text">@p.Title</div>
+                <div class="center">@p.Price.ToString("$#,###.00")</div>
+                <div class="center">
+                    <a href="javascript:void(0)" onclick="ToggleCart('@p.ProductID', '@Model.CurrentUser.UserID')">Add To Cart</a>
+                    @if (p.ActionStatus == Momberg_SET253_Final.Models.CProduct.ActionStatusTypes.ToggleWatchOn)
+                    {
+                        <img src="~/Content/Images/Yes_check.png" id="Toggle-@p.ProductID" width="15" />
+                    }
+                    else
+                    {
+                        <img src="~/Content/Images/Yes_check.png" id="Toggle-@p.ProductID" width="15" class="hide" />
+                    }
+                </div>
+            </div>
+                }
+            }
+        }
+        else
+        {
+            foreach (Momberg_SET253_Final.Models.CProduct p in Model.Products)
+            {
+            <div class="product-small center">
+                @if (p.PrimaryImage != null)
+                {
+
+                    <a href="@Url.Action("ProductDetails", "Home", new { id = p.ProductID })">
+                        <div><img class="thumbnail" src="@string.Concat("data:Image/", p.PrimaryImage.GetShortExtension, ";base64,", p.PrimaryImage.BytesBase64)" /></div>
+                    </a>
+                }
+                <div class="center cut-text">@p.Title</div>
+                <div class="center">@p.Price.ToString("$#,###.00")</div>
+                <div class="center"><a href="@Url.Action("ProductDetails", "Home", new { id = p.ProductID })">Click to view</a></div>
+            </div>
+        }
+    }
+
+</div>
+
+<script>
+    function ToggleCart(ProductID, UserID)
+    {
+        var data =
+            {
+                intProductID: ProductID,
+                intUserID: UserID,
+            }
+    
+        $.ajax({
+            type: "POST",
+            url: "/Home/Home",
+            data: data,
+            success: function (HomeData)
+            {
+                if (HomeData.ActionStatus == 1) // toggle on
+                    $("#Toggle-".concat(ProductID)).show();
+                else if (HomeData.ActionStatus == 2) // Toggle off
+                    $("#Toggle-".concat(ProductID)).hide();
+            },
+            error: function (xhr)
+            {
+            
+        }
+     });
+    }
+</script>

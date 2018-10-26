@@ -1,0 +1,27 @@
+﻿@model Momberg_SET253_Final.Models.CUser
+@{
+    ViewBag.Title = "Login";
+}
+<div class="middle">
+    <h2>Login</h2>
+    <p>Enter your email address and password to log in</p>
+    @using (Html.BeginForm("Login", "User", FormMethod.Post))
+    {
+        <div class="section">
+            <div>@Html.LabelFor(Model => Model.EmailAddress)</div>
+            <div>@Html.TextBoxFor(Model => Model.EmailAddress)</div>
+        </div>
+
+        <div class="section">
+            <div>@Html.LabelFor(Model => Model.Password)</div>
+            <div>@Html.TextBoxFor(Model => Model.Password, new { type = "password" })</div>
+        </div>
+
+        <button id="btnLogin" name="btnLogin" value="Login" title="Click to log in">Login</button>
+    }
+</div>
+<script>
+    $(document).ready(function () {
+        $("#EmailAddress").focus();
+    });
+</script>

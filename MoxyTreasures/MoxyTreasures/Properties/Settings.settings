@@ -1,0 +1,9 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Momberg_SET253_Final.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="ApplicationDBConnectionString" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Data Source=(local); Initial Catalog=MoxyTreasures; Integrated Security=True; MultipleActiveResultSets=True</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

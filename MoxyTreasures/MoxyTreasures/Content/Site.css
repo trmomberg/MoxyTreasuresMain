@@ -1,0 +1,132 @@
+﻿body {
+    margin: 0;
+    padding: 0;
+	font-family: Helvetica Neue, Helvetica, Arial;  
+}
+h2 { margin-bottom: 1em;}
+
+/*keep these from going outside of div*/
+div, input[type=text], textarea, select, input[type=password] {
+    box-sizing : border-box; 
+}
+.product-small {
+    border: 1px solid lightgray;
+	border-radius: 0.3em;
+	-webkit-border-radius: 0.3em;
+	-moz-border-radius: 0.3em;
+    padding: 0.4em; 
+    margin-right: 1em; 
+    margin-bottom: 1em; 
+    display: inline-block;
+    width: 15em;
+}
+.product-small:hover {
+    border: 1px solid black;
+	border-radius: 0.3em;
+	-webkit-border-radius: 0.3em;
+	-moz-border-radius: 0.3em;
+}
+.product-large {
+    border: 1px solid gray;
+	border-radius: 0.3em;
+    max-height:20em;
+	-webkit-border-radius: 0.3em;
+	-moz-border-radius: 0.3em;
+    padding: 0.4em; 
+    margin-right: 1em; 
+    margin-bottom: 1em; 
+    display: inline-block;
+}
+.cut-text { 
+    text-overflow: ellipsis; 
+    overflow: hidden; 
+    width: 13.5em; 
+    white-space: nowrap; 
+}
+.thumbnail {
+    width: 12em;
+}
+.thumbnail2 {
+    width: 25em;
+}
+.icon{
+    width: 2em;
+}
+.center { text-align: center;}
+#home-header {
+    margin-left: 0;
+    margin-right: 0;
+    text-align: center;
+    background-color: cornflowerblue;
+    color: darkgrey;
+    display: block;
+}
+#layout-h1 {
+    color: white; 
+    display: inline-block;
+    /*margin-top: 0.4em;
+    margin-right: 1em;
+    margin-bottom: 0.3em;
+    margin-left: 0.5em;*/
+}
+#home-header #search {
+    display:inline-block;
+}
+#level2 {
+    clear:both;
+    display: block;
+}
+/*#filter-header {
+    font-size: 1.3em;
+    font-weight: normal;
+}
+#filter {
+    display: inline-block; 
+    border-top: 1px solid white;
+    vertical-align: top;
+    background-color: #333333;
+    color: white;
+    width: 200px;
+    padding: 1em 0.5em 0 0.5em;
+}*/
+#work-space {
+    clear:both;
+    vertical-align: top;
+}
+.wider-items {width: 100%; max-width: 20em;}
+#primary-image {
+    display: inline;
+    float: left;
+}
+#product-edit {
+    margin-right: 1.5em;
+    display: inline;
+    float: left;
+    padding: 0.6em; 
+}
+.section {
+    overflow: visible; 
+    overflow:auto; 
+    display:block; 
+    clear:both;
+    margin-bottom: 1.25em;
+    margin-top: 1em;
+}
+.top{
+    margin-top: 1em;
+}
+.item {
+    overflow: visible; 
+    display:inline; 
+    float:left;
+    margin-right: 0.75em;
+}
+.hide { display: none; }
+.middle {
+    margin: 0 auto;
+    max-width: 800px;
+    height: 500px;
+}
+#txtarea{
+    resize:none;
+}

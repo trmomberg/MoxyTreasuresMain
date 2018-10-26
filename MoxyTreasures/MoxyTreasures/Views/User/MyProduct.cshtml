@@ -1,0 +1,68 @@
+﻿@model Momberg_SET253_Final.Models.CUser
+
+<div class="middle">
+    <link href="~/Content/Main.css" rel="stylesheet" />
+    @if (Model.ProductList[0].ProductID > 0)
+    {
+        <h2>Edit Product</h2>
+    }
+    else
+    {
+        <h2>New Product</h2>
+    }
+    @using (Html.BeginForm("MyProduct", "User", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Scripts.Render("~/App_Start/BundleConfig")
+    <div id="my-product">
+        <div id="product-edit">
+            <div class="section">
+                <div class="item wider-items">
+                    <div>@Html.LabelFor(Model => Model.ProductList[0].Title)</div>
+                    <div>@Html.TextBoxFor(Model => Model.ProductList[0].Title, new { style = "width: 100%;" })</div>
+                </div>
+            </div>
+            <div class="section">
+                <div class="item wider-items">
+                    <div>Picture</div>
+                    <div>
+                        <input type="file" name="PrimaryImage" id="PrimaryImage" style="width: 100%" />
+                    </div>
+                </div>
+            </div>
+            <div class="section">
+                <div class="item">
+                    <div>@Html.LabelFor(Model => Model.ProductList[0].Price)</div>
+                    <div>@Html.TextBoxFor(Model => Model.ProductList[0].Price, new { style = "width: 6em;" })</div>
+                </div>
+                <div class="item">
+                    <div>@Html.LabelFor(Model => Model.ProductList[0].CategoryID)</div>
+                    <div>@Html.DropDownListFor(Model => Model.ProductList[0].CategoryID, new SelectList(Model.ProductList[0].ProductTypesList, "Value", "Text", (int)Model.ProductList[0].CategoryID))</div>
+                </div>
+            </div>
+            <div class="">
+                <div class="item wider-items">
+                    <div>@Html.LabelFor(Model => Model.ProductList[0].Description)</div>
+                    <div>@Html.TextAreaFor(Model => Model.ProductList[0].Description, new { style = "width: 100%;", rows = "3" })</div>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <button id="btnSubmit" name="btnSubmit" value="save" title="Click to save">Save</button>
+            <button id="btnSubmit" name="btnSubmit" value="cancel" title="Click to cancel">Cancel</button>
+            @if (Model.ProductList[0].ProductID > 0)
+            {
+                <button id="btnSubmit" name="btnSubmit" value="delete" title="Click to delete">Delete</button>
+            }
+
+        </div>
+        @if (Model.ProductList[0].PrimaryImage != null)
+        {
+            <div id="primary-image"style="float:left">
+                <div><img class="product-large" src="@string.Concat("data:Image/", Model.ProductList[0].PrimaryImage.GetShortExtension, ";base64,", Model.ProductList[0].PrimaryImage.BytesBase64)" /></div>
+            </div>
+        }
+
+    </div>
+    }
+</div>
+        

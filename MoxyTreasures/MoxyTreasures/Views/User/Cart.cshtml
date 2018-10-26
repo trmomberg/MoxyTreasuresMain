@@ -1,0 +1,28 @@
+﻿@model Momberg_SET253_Final.Models.CUser
+@{
+    ViewBag.Title = "Cart";
+    Layout = "~/Views/Shared/_LayoutUser.cshtml";
+}
+<div class="middle">
+    <h2>My Cart</h2>
+
+    <div>
+      
+        @foreach (Momberg_SET253_Final.Models.CProduct p in Model.Cart)
+        {
+            <div class="product-small center">
+                @if (p.PrimaryImage != null)
+                {
+                <a href="@Url.Action("ProductDetails", "Home", new { id = p.ProductID })">
+                    <div><img class="thumbnail" src="@string.Concat("data:Image/", p.PrimaryImage.GetShortExtension, ";base64,", p.PrimaryImage.BytesBase64)" /></div>
+                </a>
+                }
+                <div class="center cut-text">@p.Title</div>
+                <div class="center">@p.Price.ToString("$#,###.00")</div>
+             </div>
+        }
+        <p>SubTotal: $750.00</p>
+        <button>Checkout</button>
+        
+    </div>
+</div>

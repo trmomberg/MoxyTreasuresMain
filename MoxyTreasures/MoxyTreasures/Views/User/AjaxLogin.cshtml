@@ -1,0 +1,48 @@
+﻿@model Momberg_SET253_Final.Models.CUser
+@{
+    ViewBag.Title = "AjaxLogin";
+}
+
+<h2>Ajax Login</h2>
+
+<div class="section">
+    <div>@Html.LabelFor(Model => Model.EmailAddress)</div>
+    <div>@Html.TextBoxFor(Model => Model.EmailAddress)</div>
+</div>
+
+<div class="section">
+    <div>@Html.LabelFor(Model => Model.Password)</div>
+    <div>@Html.PasswordFor(Model => Model.Password)</div>
+</div>
+<div>
+    <button id="btnLogin" name="btnLogin" value="Login" title="Click to log in" onclick="ajaxLogin()">Login via Ajax</button>
+</div>
+<div id="login-status"></div>
+
+<script>
+    function ajaxLogin()
+    {
+        var User =
+            {
+                EmailAddress: $("#EmailAddress").val(),
+                Password: $("#Password").val()
+            }
+        debugger;
+        $.ajax({
+            type: "POST",
+            url: "/User/AjaxLogin",
+            data: User,
+            success: function (userData)
+            {
+                if (userData.ActionStatus == 3) // User logged in
+                    $("#login-status").html("Logged in as ".concat(userData.FirstName))
+                else
+                    $("#login-status").html("Failed to login with the information provided")
+            },
+            error: function (xhr)
+            {
+                debugger;
+            }
+        });
+    }
+</script>
