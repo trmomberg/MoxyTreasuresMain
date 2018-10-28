@@ -1,4 +1,4 @@
-﻿@model Momberg_SET253_Final.Models.CHome
+﻿@model MoxyTreasures.Models.CHome
 @{
     ViewBag.Title = "Home";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -12,7 +12,7 @@
     {
         if (Model.Products != null)
         {
-            foreach (Momberg_SET253_Final.Models.CProduct p in Model.Products)
+            foreach (MoxyTreasures.Models.CProduct p in Model.Products)
             {
             <div class="product-small center">
 
@@ -26,7 +26,7 @@
                 <div class="center">@p.Price.ToString("$#,###.00")</div>
                 <div class="center">
                     <a href="javascript:void(0)" onclick="ToggleCart('@p.ProductID', '@Model.CurrentUser.UserID')">Add To Cart</a>
-                    @if (p.ActionStatus == Momberg_SET253_Final.Models.CProduct.ActionStatusTypes.ToggleWatchOn)
+                    @if (p.ActionStatus == MoxyTreasures.Models.CProduct.ActionStatusTypes.ToggleWatchOn)
                     {
                         <img src="~/Content/Images/Yes_check.png" id="Toggle-@p.ProductID" width="15" />
                     }
@@ -41,7 +41,7 @@
         }
         else
         {
-            foreach (Momberg_SET253_Final.Models.CProduct p in Model.Products)
+            foreach (MoxyTreasures.Models.CProduct p in Model.Products)
             {
             <div class="product-small center">
                 @if (p.PrimaryImage != null)

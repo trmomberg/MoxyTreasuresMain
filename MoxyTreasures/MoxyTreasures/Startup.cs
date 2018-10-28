@@ -1,8 +1,8 @@
 ﻿using Microsoft.Owin;
 using Owin;
 
-[assembly: OwinStartupAttribute(typeof(Momberg_SET253_Final.Startup))]
-namespace Momberg_SET253_Final
+[assembly: OwinStartupAttribute(typeof(MoxyTreasures.Startup))]
+namespace MoxyTreasures
 {
     public partial class Startup
     {

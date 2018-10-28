@@ -5,7 +5,7 @@ using System.Web;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace Momberg_SET253_Final.Models
+namespace MoxyTreasures.Models
 {
 	public class CDatabase
 	{

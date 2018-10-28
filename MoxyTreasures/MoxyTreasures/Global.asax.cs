@@ -6,7 +6,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 
-namespace Momberg_SET253_Final
+namespace MoxyTreasures
 {
     public class MvcApplication : System.Web.HttpApplication
     {

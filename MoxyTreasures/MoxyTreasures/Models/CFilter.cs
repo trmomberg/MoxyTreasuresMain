@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Momberg_SET253_Final.Models
+namespace MoxyTreasures.Models
 {
     public class CFilter
     {

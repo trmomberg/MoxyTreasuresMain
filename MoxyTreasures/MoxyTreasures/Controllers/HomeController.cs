@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace Momberg_SET253_Final.Controllers
+namespace MoxyTreasures.Controllers
 {
     public class HomeController : Controller
     {

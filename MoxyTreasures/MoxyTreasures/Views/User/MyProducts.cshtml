@@ -1,4 +1,4 @@
-﻿@model Momberg_SET253_Final.Models.CUser
+﻿@model MoxyTreasures.Models.CUser
 @{
     ViewBag.Title = "Products";
 }
@@ -14,7 +14,7 @@
     </div>
     @if (Model.ProductList != null)
     {
-        foreach (Momberg_SET253_Final.Models.CProduct p in Model.ProductList)
+        foreach (MoxyTreasures.Models.CProduct p in Model.ProductList)
         {
             <div class="product-small center">
                 @if (p.PrimaryImage != null)

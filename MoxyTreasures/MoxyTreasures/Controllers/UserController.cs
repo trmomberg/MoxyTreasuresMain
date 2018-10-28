@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.IO;
 
-namespace Momberg_SET253_Final.Controllers
+namespace MoxyTreasures.Controllers
 {
     public class UserController : Controller
     {

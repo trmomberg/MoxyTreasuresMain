@@ -1,4 +1,4 @@
-﻿@model Momberg_SET253_Final.Models.CUser
+﻿@model MoxyTreasures.Models.CUser
 @{
     ViewBag.Title = "SignUp";
 }
@@ -44,7 +44,7 @@
         <div>@Html.DropDownListFor(Model => Model.intStateID, new SelectList(Model.StatesList, "Value", "Text", Model.StatesList))</div>
     </div>
 
-    @if (Model.ActionStatus != Momberg_SET253_Final.Models.CUser.ActionStatusTypes.UserUpdated)
+    @if (Model.ActionStatus != MoxyTreasures.Models.CUser.ActionStatusTypes.UserUpdated)
     {
         <div class="">
             <div class="label">&nbsp;</div>
@@ -55,12 +55,12 @@
     }
     @switch (Model.ActionStatus)
     {
-        case Momberg_SET253_Final.Models.CUser.ActionStatusTypes.UserUpdated:
+        case MoxyTreasures.Models.CUser.ActionStatusTypes.UserUpdated:
             <div class="Section">
                 <div>Sign-up successful</div>
             </div>
             break;
-        case Momberg_SET253_Final.Models.CUser.ActionStatusTypes.UserAlreadyExists:
+        case MoxyTreasures.Models.CUser.ActionStatusTypes.UserAlreadyExists:
             <div class="Section">
                 <div>Email Address already used</div>
             </div>

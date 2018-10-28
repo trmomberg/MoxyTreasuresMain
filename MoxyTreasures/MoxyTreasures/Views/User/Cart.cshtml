@@ -1,4 +1,4 @@
-﻿@model Momberg_SET253_Final.Models.CUser
+﻿@model MoxyTreasures.Models.CUser
 @{
     ViewBag.Title = "Cart";
     Layout = "~/Views/Shared/_LayoutUser.cshtml";
@@ -8,7 +8,7 @@
 
     <div>
       
-        @foreach (Momberg_SET253_Final.Models.CProduct p in Model.Cart)
+        @foreach (MoxyTreasures.Models.CProduct p in Model.Cart)
         {
             <div class="product-small center">
                 @if (p.PrimaryImage != null)

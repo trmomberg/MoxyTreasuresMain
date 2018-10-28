@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.ComponentModel;
 
-namespace Momberg_SET253_Final.Models
+namespace MoxyTreasures.Models
 {
 	public class CHome
 	{

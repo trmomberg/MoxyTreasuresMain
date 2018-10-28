@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Optimization;
 
-namespace Momberg_SET253_Final
+namespace MoxyTreasures
 {
 	public class BundleConfig
 	{

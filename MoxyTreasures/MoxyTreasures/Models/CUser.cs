@@ -7,7 +7,7 @@ using System.Reflection;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 
-namespace Momberg_SET253_Final.Models
+namespace MoxyTreasures.Models
 {
     public class CUser
     {
