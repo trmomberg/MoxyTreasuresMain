@@ -3,36 +3,38 @@
     ViewBag.Title = "MyProfile";
 }
 
-<h2>My Profile</h2>
-<p>Here is your profile information</p>
-@using (Html.BeginForm("MyProfile", "User", FormMethod.Post))
-{
-    <div>
-        <div class="Section">
-            <div>@Html.LabelFor(Model => Model.FirstName)</div>
-            <div>@Html.TextBoxFor(Model => Model.FirstName)</div>
-        </div>
+<div class="middle">
+    <h2>My Profile</h2>
+    <p>Here is your profile information</p>
+    @using (Html.BeginForm("MyProfile", "User", FormMethod.Post))
+    {
+        <div>
+            <div class="Section">
+                <div>@Html.LabelFor(Model => Model.FirstName)</div>
+                <div>@Html.TextBoxFor(Model => Model.FirstName)</div>
+            </div>
 
-        <div class="Section">
-            <div>@Html.LabelFor(Model => Model.LastName)</div>
-            <div>@Html.TextBoxFor(Model => Model.LastName)</div>
-        </div>
+            <div class="Section">
+                <div>@Html.LabelFor(Model => Model.LastName)</div>
+                <div>@Html.TextBoxFor(Model => Model.LastName)</div>
+            </div>
 
-        <div class="Section">
-            <div>@Html.LabelFor(Model => Model.EmailAddress)</div>
-            <div>@Html.TextBoxFor(Model => Model.EmailAddress)</div>
-        </div>
+            <div class="Section">
+                <div>@Html.LabelFor(Model => Model.EmailAddress)</div>
+                <div>@Html.TextBoxFor(Model => Model.EmailAddress)</div>
+            </div>
 
-        <div class="section">
-            <div>@Html.LabelFor(Model => Model.Password)</div>
-            <div>@Html.TextBoxFor(Model => Model.Password, new { type = "password" })</div>
-        </div>
+            <div class="section">
+                <div>@Html.LabelFor(Model => Model.Password)</div>
+                <div>@Html.TextBoxFor(Model => Model.Password, new { type = "password" })</div>
+            </div>
 
-        <div class="">
-            <div class="label">&nbsp;</div>
-            <div>
-                <button id="btnUpdate" name="btnUpdate" value="update" title="Click to sign-up!">Update</button>
+            <div class="">
+                <div class="label">&nbsp;</div>
+                <div>
+                    <button id="btnUpdate" name="btnUpdate" value="update" title="Click to sign-up!">Update</button>
+                </div>
             </div>
         </div>
-   </div>
-}
+    }
+</div>

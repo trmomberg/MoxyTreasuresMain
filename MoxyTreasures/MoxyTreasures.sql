@@ -11,14 +11,18 @@ SET NOCOUNT ON			-- Report only errors
 -- --------------------------------------------------------------------------------
 
 --Tables
+
+IF OBJECT_ID( 'TOrderProductList' )				IS NOT NULL		DROP TABLE TOrderProductList
 IF OBJECT_ID( 'TCart' )							IS NOT NULL		DROP TABLE TCart
 IF OBJECT_ID( 'TImages' )						IS NOT NULL		DROP TABLE TImages
 IF OBJECT_ID( 'TProducts' )						IS NOT NULL		DROP TABLE TProducts
-IF OBJECT_ID( 'TUsers' )						IS NOT NULL		DROP TABLE TUsers
 IF OBJECT_ID( 'TUserLogins' )					IS NOT NULL		DROP TABLE TUserLogins
 IF OBJECT_ID( 'TStates' )						IS NOT NULL		DROP TABLE TStates
+IF OBJECT_ID( 'TCategories' )					IS NOT NULL		DROP TABLE TCategories
+IF OBJECT_ID( 'TStatuses' )						IS NOT NULL		DROP TABLE TStatuses
+IF OBJECT_ID( 'TOrders' )						IS NOT NULL		DROP TABLE TOrders
+IF OBJECT_ID( 'TUsers' )						IS NOT NULL		DROP TABLE TUsers
 IF OBJECT_ID( 'TGenders' )						IS NOT NULL		DROP TABLE TGenders
-
 
 -- Stored Procedures
 -- Users
@@ -27,6 +31,12 @@ IF OBJECT_ID( 'uspAddUser' )					IS NOT NULL		DROP PROCEDURE uspAddUser
 IF OBJECT_ID( 'uspEditUser' )					IS NOT NULL		DROP PROCEDURE uspEditUser
 IF OBJECT_ID( 'uspDeleteUser' )					IS NOT NULL		DROP PROCEDURE uspDeleteUser
 
+-- Categories
+IF OBJECT_ID( 'uspSelectCategory' )				IS NOT NULL		DROP PROCEDURE uspSelectCategory
+IF OBJECT_ID( 'uspAddCategory' )				IS NOT NULL		DROP PROCEDURE uspAddCategory
+IF OBJECT_ID( 'uspEditCategory' )				IS NOT NULL		DROP PROCEDURE uspEditCategory
+IF OBJECT_ID( 'uspDeleteCategory' )				IS NOT NULL		DROP PROCEDURE uspDeleteCategory
+
 -- Products
 IF OBJECT_ID( 'uspSelectProduct' )				IS NOT NULL		DROP PROCEDURE uspSelectProduct
 IF OBJECT_ID( 'uspSelectProductState' )			IS NOT NULL		DROP PROCEDURE uspSelectProductState
@@ -34,6 +44,12 @@ IF OBJECT_ID( 'uspAddProduct' )					IS NOT NULL		DROP PROCEDURE uspAddProduct
 IF OBJECT_ID( 'uspEditProduct' )				IS NOT NULL		DROP PROCEDURE uspEditProduct
 IF OBJECT_ID( 'uspEditProductBuyer' )			IS NOT NULL		DROP PROCEDURE uspEditProductBuyer
 IF OBJECT_ID( 'uspDeleteProduct' )				IS NOT NULL		DROP PROCEDURE uspDeleteProduct
+
+-- Orders
+IF OBJECT_ID( 'uspSelectOrder' )				IS NOT NULL		DROP PROCEDURE uspSelectOrder
+IF OBJECT_ID( 'uspSelectOrderList' )			IS NOT NULL		DROP PROCEDURE uspSelectOrderList
+IF OBJECT_ID( 'uspAddOrder' )					IS NOT NULL		DROP PROCEDURE uspAddOrder
+IF OBJECT_ID( 'uspEditOrder' )					IS NOT NULL		DROP PROCEDURE uspEditOrder
 
 -- Images
 IF OBJECT_ID( 'uspSelectImage' )				IS NOT NULL		DROP PROCEDURE uspSelectImage
@@ -44,8 +60,8 @@ IF OBJECT_ID( 'uspDeleteImage' )				IS NOT NULL		DROP PROCEDURE uspDeleteImage
 
 -- Misc
 IF OBJECT_ID( 'uspLogin' )						IS NOT NULL		DROP PROCEDURE uspLogin
-IF OBJECT_ID( 'uspToggleCart' )			IS NOT NULL		DROP PROCEDURE uspToggleCart
-IF OBJECT_ID( 'uspGetCart' )				IS NOT NULL		DROP PROCEDURE uspGetCart
+IF OBJECT_ID( 'uspToggleCart' )					IS NOT NULL		DROP PROCEDURE uspToggleCart
+IF OBJECT_ID( 'uspGetCart' )					IS NOT NULL		DROP PROCEDURE uspGetCart
 IF OBJECT_ID( 'uspIsWatched' )					IS NOT NULL		DROP PROCEDURE uspIsWatched
 
 -- --------------------------------------------------------------------------------
@@ -59,7 +75,7 @@ CREATE TABLE TUsers
 	,strEmailAddress	VARCHAR(50)				NOT NULL
 	,dtmDateOfBirth		DATETIME				NOT NULL
 	,strCity			VARCHAR(50)				NOT NULL
-	,intStateID			INTEGER					NOT NULL
+	,intStateID			INTEGER					NOT NULL  
 	,intGenderID		INTEGER					NOT NULL
 	,blnAdmin			INTEGER					NOT NULL
 	,CONSTRAINT TUsers_PK PRIMARY KEY ( intUserID )
@@ -81,7 +97,6 @@ CREATE TABLE TProducts
 	,strTitle			VARCHAR(50)				NOT NULL
 	,strDescription		VARCHAR(250)			NOT NULL
 	,intPrice			INTEGER					NOT NULL
-	,intStatusID		INTEGER					NOT NULL
 	,CONSTRAINT TProducts_PK PRIMARY KEY ( intProductID )
 )
 
@@ -108,7 +123,27 @@ CREATE TABLE TCart
 (
 	 intUserID			INTEGER					NOT NULL
 	,intProductID		INTEGER					NOT NULL
-	,CONSTRAINT TCart_PK PRIMARY KEY ( intProductID,  intUserID)
+	,CONSTRAINT TCart_PK PRIMARY KEY ( intProductID,  intUserID )
+)
+
+CREATE TABLE TOrders
+(
+	intOrderID			INTEGER					NOT NULL
+   ,intUserID			INTEGER					NOT NULL
+   ,intTotal			INTEGER					NOT NULL
+   ,dtmDateOfOrder		DATETIME				NOT NULL
+   ,strShippingAddress	VARCHAR(50)				NOT NULL
+   ,strCity				VARCHAR(50)				NOT NULL
+   ,intStateID			INTEGER					NOT NULL
+   ,intStatusID			INTEGER					NOT NULL
+   ,CONSTRAINT TOrders_PK PRIMARY KEY (intOrderID)
+)
+
+CREATE TABLE TOrderProductList
+(
+	 intOrderID			INTEGER					NOT NULL
+	,intProductID		INTEGER					NOT NULL
+	,CONSTRAINT TOrderProductList_PK PRIMARY KEY (intOrderID, intProductID)
 )
 
 CREATE TABLE TGenders
@@ -118,16 +153,37 @@ CREATE TABLE TGenders
 	,CONSTRAINT TGenders_PK PRIMARY KEY ( intGenderID )
 )
 
+CREATE TABLE TCategories
+(
+	 intCategoryID		INTEGER					NOT NULL
+	,strCategory		VARCHAR(50)				NOT NULL
+	,CONSTRAINT TCategories_PK PRIMARY KEY ( intCategoryID )
+)
+
+CREATE TABLE TStatuses
+(
+	 intStatusID		INTEGER					NOT NULL
+	,strStatus			VARCHAR(50)				NOT NULL
+	,CONSTRAINT TStatuses_PK PRIMARY KEY ( intStatusID )
+)
+
+
 -- --------------------------------------------------------------------------------
 -- Identify and Create Foreign Keys  
 -- --------------------------------------------------------------------------------
 --
 -- #	Child								Parent						Column(s)
 -- -	-----								------						---------
--- 2	TImages								TProducts					intProductID
--- 3	TCart							TUsers						intUserID
--- 4    TCart							TProducts					intProductID
--- 5	TUsers								TGenders					intGenderID
+-- 1	TImages								TProducts					intProductID
+-- 2	TCart								TUsers						intUserID
+-- 3    TCart								TProducts					intProductID
+-- 4	TUsers								TGenders					intGenderID
+-- 5	TOrders								TUsers						intUserID
+-- 6    TOrders								TState						intStateID
+-- 7    TOrderProductList					TOrders						intOrderID
+-- 8    TOrderProductList					TProducts					intProductID
+-- 9	TProducts							TCategories					intCategoryID
+-- 10	TOrders								TStatuses					intStatusID
 
 -- 1
 ALTER TABLE TImages ADD CONSTRAINT TImages_TProducts_FK
@@ -145,60 +201,84 @@ FOREIGN KEY ( intProductID ) REFERENCES TProducts ( intProductID )
 ALTER TABLE TUsers ADD CONSTRAINT TUsers_TGenders_FK
 FOREIGN KEY ( intGenderID ) REFERENCES TGenders ( intGenderID )
 
+-- 5
+ALTER TABLE TOrders ADD CONSTRAINT TOrders_TUsers_FK
+FOREIGN KEY ( intUserID ) REFERENCES TUsers ( intUserID )
+
+-- 6
+ALTER TABLE TOrders ADD CONSTRAINT TOrders_TStates_FK
+FOREIGN KEY ( intStateID ) REFERENCES TStates ( intStateID )
+
+-- 7
+ALTER TABLE TOrderProductList ADD CONSTRAINT TOrderProductList_TOrders_FK
+FOREIGN KEY ( intOrderID ) REFERENCES TOrders ( intOrderID )
+
+-- 8
+ALTER TABLE TOrderProductList ADD CONSTRAINT TOrderProductList_TProducts_FK
+FOREIGN KEY ( intProductID ) REFERENCES TProducts ( intProductID )
+
+-- 9
+ALTER TABLE TProducts ADD CONSTRAINT TProducts_TCategories_FK
+FOREIGN KEY ( intCategoryID ) REFERENCES TCategories ( intCategoryID )
+
+-- 10
+ALTER TABLE TOrders ADD CONSTRAINT TOrders_TStatuses_FK
+FOREIGN KEY ( intStatusID ) REFERENCES TStatuses ( intStatusID )
+
 -- --------------------------------------------------------------------------------
 -- Insert Values
 -- --------------------------------------------------------------------------------
 INSERT INTO TStates( intStateID, strState)
-VALUES			 ( 1, 'Alabama')
-				,( 2, 'Alaska')
-				,( 3, 'Arizona')
-				,( 4, 'Arkansas')
-				,( 5, 'California')
-				,( 6, 'Colorado')
-				,( 7, 'Connecticut')
-				,( 8, 'Delaware')
-				,( 9, 'Florida')
-				,( 10, 'Georgia')
-				,( 11, 'Hawaii')
-				,( 12, 'Idaho')
-				,( 13, 'Illinois')
-				,( 14, 'Indiana')
-				,( 15, 'Iowa')
-				,( 16, 'Kansas')
-				,( 17, 'Kentucky')
-				,( 18, 'Louisiana')
-				,( 19, 'Maine')
-				,( 20, 'Maryland')
-				,( 21, 'Massachusetts')
-				,( 22, 'Michigan')
-				,( 23, 'Minnesota')
-				,( 24, 'Mississippi')
-				,( 25, 'Missouri')
-				,( 26, 'Montana')
-				,( 27, 'Nebraska')
-				,( 28, 'Nevada')
-				,( 29, 'New Hampshire')
-				,( 30, 'New Jersey')
-				,( 31, 'New Mexico')
-				,( 32, 'New York')
-				,( 33, 'North Carolina')
-				,( 34, 'North Dakota')
-				,( 35, 'Ohio')
-				,( 36, 'Oklahoma')
-				,( 37, 'Oregon')
-				,( 38, 'Pennsylvania')
-				,( 39, 'Rhode Island')
-				,( 40, 'South Carolina')
-				,( 41, 'South Dakota')
-				,( 42, 'Tennessee')
-				,( 43, 'Texas')
-				,( 44, 'Utah')
-				,( 45, 'Vermont')
-				,( 46, 'Virginia')
-				,( 47, 'Washington')
-				,( 48, 'West Virginia')
-				,( 49, 'Wisconsin')
-				,( 50, 'Wyoming')
+VALUES ( 1, 'Alabama')
+	  ,( 2, 'Alaska')
+	  ,( 3, 'Arizona')
+	  ,( 4, 'Arkansas')
+	  ,( 5, 'California')
+	  ,( 6, 'Colorado')
+	  ,( 7, 'Connecticut')
+	  ,( 8, 'Delaware')
+	  ,( 9, 'Florida')
+	  ,( 10, 'Georgia')
+	  ,( 11, 'Hawaii')
+	  ,( 12, 'Idaho')
+	  ,( 13, 'Illinois')
+	  ,( 14, 'Indiana')
+	  ,( 15, 'Iowa')
+	  ,( 16, 'Kansas')
+	  ,( 17, 'Kentucky')
+	  ,( 18, 'Louisiana')
+	  ,( 19, 'Maine')
+	  ,( 20, 'Maryland')
+	  ,( 21, 'Massachusetts')
+	  ,( 22, 'Michigan')
+	  ,( 23, 'Minnesota')
+	  ,( 24, 'Mississippi')
+	  ,( 25, 'Missouri')
+	  ,( 26, 'Montana')
+	  ,( 27, 'Nebraska')
+	  ,( 28, 'Nevada')
+	  ,( 29, 'New Hampshire')
+	  ,( 30, 'New Jersey')
+	  ,( 31, 'New Mexico')
+	  ,( 32, 'New York')
+	  ,( 33, 'North Carolina')
+	  ,( 34, 'North Dakota')
+	  ,( 35, 'Ohio')
+	  ,( 36, 'Oklahoma')
+	  ,( 37, 'Oregon')
+	  ,( 38, 'Pennsylvania')
+	  ,( 39, 'Rhode Island')
+	  ,( 40, 'South Carolina')
+	  ,( 41, 'South Dakota')
+	  ,( 42, 'Tennessee')
+	  ,( 43, 'Texas')
+	  ,( 44, 'Utah')
+	  ,( 45, 'Vermont')
+	  ,( 46, 'Virginia')
+	  ,( 47, 'Washington')
+	  ,( 48, 'West Virginia')
+	  ,( 49, 'Wisconsin')
+	  ,( 50, 'Wyoming')
 
 INSERT INTO TGenders(intGenderID, strGender)
 VALUES (0, 'Male')
@@ -208,6 +288,14 @@ VALUES (0, 'Male')
 INSERT INTO TUsers (intUserID, strFirstName, strLastName, strEmailAddress, dtmDateOfBirth, strCity, intstateID, intGenderID,  blnAdmin)
 VALUES (0, 'Empty', 'User', '', '01/01/2100', '', 1, 1, 0)
 
+INSERT INTO TCategories (intCategoryID, strCategory)
+VALUES  (0, '')
+	   ,(1, 'Ring')
+	   ,(2, 'Necklace')
+	   ,(3, 'Earrings')
+	   ,(4, 'Bracelet')
+	   ,(5, 'Clothing')
+	   ,(6, 'Other')
 
 -- --------------------------------------------------------------------------------
 -- Stored Procedures
@@ -425,7 +513,6 @@ CREATE PROCEDURE uspAddProduct
 	,@strTitle				VARCHAR(50)
 	,@strDescription		VARCHAR(50)
 	,@intPrice				INT
-	,@intStatusID			INT
 
 AS
 BEGIN
@@ -441,8 +528,8 @@ BEGIN
 		--default to 1 if table is empty
 		SELECT @intProductID = COALESCE ( @intProductID, 1 )
 		
-		INSERT INTO TProducts (intProductID, intCategoryID, strTitle, strDescription, intPrice, intStatusID)
-		VALUES (@intProductID, @intCategoryID, @strTitle, @strDescription, @intPrice, @intStatusID)
+		INSERT INTO TProducts (intProductID, intCategoryID, strTitle, strDescription, intPrice)
+		VALUES (@intProductID, @intCategoryID, @strTitle, @strDescription, @intPrice)
 
 	COMMIT TRANSACTION
 
@@ -489,14 +576,215 @@ BEGIN
 	BEGIN
 		UPDATE TProducts SET intPrice = @intPrice WHERE intProductID = @intProductID
 	END
+	
+	RETURN 0 -- Product Updated
+END
+GO
+
+-- --------------------------------------------------
+-- Category
+-- --------------------------------------------------
+
+-- Select User
+GO
+CREATE PROCEDURE uspSelectCategory
+	@intCategoryID  INT = NULL
+
+AS
+BEGIN
+    SET NOCOUNT ON
+
+	IF @intCategoryID IS NOT NULL
+		SELECT * FROM TCategories WHERE intCategoryID = @intCategoryID		
+	ELSE
+		SELECT * FROM TCategories
+		
+
+END 
+GO
+
+-- Add Category
+GO
+CREATE PROCEDURE uspAddCategory
+     @intCategoryID				INT=0 OUTPUT
+	,@strCategory				VARCHAR(50)
+AS
+BEGIN
+    SET NOCOUNT ON
+
+	SET XACT_ABORT ON
+
+	BEGIN
+		BEGIN TRANSACTION
+			SELECT @intCategoryID = MAX( intCategoryID ) + 1
+			FROM TCategories (TABLOCKX) -- lock table until the end of transaction
+
+				--default to 1 if table is empty
+			SELECT @intCategoryID = COALESCE ( @intCategoryID, 1 )
+
+				-- Insert Category Values
+			INSERT INTO TCategories (intCategoryID, strCategory)
+			VALUES (@intCategoryID, @strCategory)
+		
+		COMMIT TRANSACTION	
+		RETURN 1 -- New record created
+	END
+END
+GO
+
+-- Edit Category
+GO
+CREATE PROCEDURE uspEditCategory
+	  @intCategoryID				INT OUTPUT
+	 ,@strCategory					VARCHAR(50)
+
+AS
+BEGIN
+    SET NOCOUNT ON
+
+	-- Check Category Text
+	IF @strCategory IS NOT NULL
+	BEGIN
+		UPDATE TCategories SET strCategory = @strCategory WHERE intCategoryID = @intCategoryID
+	END
+END
+	
+GO
+
+
+-- Delete Category
+GO
+CREATE PROCEDURE uspDeleteCategory
+	@intCategoryID	INT
+
+AS
+BEGIN
+    SET NOCOUNT ON
+
+	DELETE FROM TCategories WHERE intCategoryID = @intCategoryID
+
+END 
+GO
+-- --------------------------------------------------
+-- Orders
+-- --------------------------------------------------
+
+-- Select Order 
+GO
+CREATE PROCEDURE uspSelectOrder
+	  @intOrderID  INT = NULL
+	 ,@intUserID  INT = NULL
+
+AS
+BEGIN
+    SET NOCOUNT ON
+
+	IF @intOrderID IS NOT NULL
+		SELECT * FROM TOrders WHERE intOrderID = @intOrderID
+	ELSE IF @intUserID IS NOT NULL
+		SELECT * FROM TOrders WHERE intUserID = @intUserID
+	ELSE
+		SELECT * FROM TOrders
+END 
+GO
+
+-- Select Order List
+GO
+CREATE PROCEDURE uspSelectOrderList
+	 @intOrderID  INT = NULL
+
+AS
+BEGIN
+    SET NOCOUNT ON
+
+	IF @intOrderID IS NOT NULL
+		SELECT * FROM TOrderProductList WHERE intOrderID = @intOrderID
+	ELSE
+		SELECT * FROM TOrderProductList
+	
+END 
+GO
+
+-- Add Product
+GO
+CREATE PROCEDURE uspAddOrder
+     @intOrderID			INT=0 OUTPUT
+	,@intUserID				INT
+	,@intTotal				INT
+	,@strAddress			VARCHAR(50)
+	,@strCity				VARCHAR(50)
+	,@intStateID			INT
+	,@intStatusID			INT
+AS
+BEGIN
+    SET NOCOUNT ON
+
+	SET XACT_ABORT ON
+
+	BEGIN TRANSACTION
+
+	SELECT @intOrderID = MAX( intOrderID ) + 1
+		FROM TOrders (TABLOCKX) -- lock table until the end of transaction
+
+		--default to 1 if table is empty
+		SELECT @intOrderID = COALESCE ( @intOrderID, 1 )
+		
+		INSERT INTO TOrders(intOrderID, intUserID, intTotal, strShippingAddress, strCity, intStateID, intStatusID)
+		VALUES (@intOrderID, @intUserID, @intTotal, @strAddress, @strCity, @intStateID, @intStatusID)
+
+	COMMIT TRANSACTION
+
+	RETURN @intOrderID
+
+END
+
+GO
+
+-- Edit Product
+GO
+CREATE PROCEDURE uspEditOrder
+	 @intOrderID		    INT	= NULL
+	,@intTotal				INT	= NULL
+	,@strAddress			VARCHAR(50)	= NULL
+	,@strCity				VARCHAR(50)	= NULL
+	,@intStateID			INT	= NULL
+	,@intStatusID			INT
+	
+AS
+BEGIN
+    SET NOCOUNT ON
+
+	-- Check Total
+	IF @intTotal IS NOT NULL
+	BEGIN
+		UPDATE TOrders SET intTotal = @intTotal WHERE intOrderID = @intOrderID
+	END
+
+	-- Check Address
+	IF @strAddress IS NOT NULL
+	BEGIN
+		UPDATE TOrders SET  strShippingAddress = @strAddress WHERE intOrderID = @intOrderID
+	END
+
+	-- Check City
+	IF @strCity IS NOT NULL
+	BEGIN
+		UPDATE TOrders SET strCity	= @strCity WHERE intOrderID = @intOrderID
+	END
+
+	-- Check State
+	IF @intStateID IS NOT NULL
+	BEGIN
+		UPDATE TOrders SET intStateID = @intStateID WHERE intOrderID = @intOrderID
+	END
 
 	-- Check Status
 	IF @intStatusID IS NOT NULL
 	BEGIN
-		UPDATE TProducts SET intStatusID	= @intStatusID WHERE intProductID = @intProductID
+		UPDATE TOrders SET intStatusID = @intStatusID WHERE intOrderID = @intOrderID
 	END
 	
-	RETURN 0 -- Product Updated
+	RETURN 0 -- Order Updated
 END
 GO
 

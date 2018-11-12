@@ -515,8 +515,13 @@ namespace MoxyTreasures.Models
 					SetParameter(ref Command, "@strFirstName", User.FirstName, SqlDbType.VarChar);
 					SetParameter(ref Command, "@strLastName", User.LastName, SqlDbType.VarChar);
 					SetParameter(ref Command, "@strEmailAddress", User.EmailAddress, SqlDbType.VarChar);
-					SetParameter(ref Command, "@strPassword", User.Password, SqlDbType.VarChar);
-					SetParameter(ref Command, "ReturnValue", 0, SqlDbType.Int, Direction: ParameterDirection.ReturnValue);
+                    SetParameter(ref Command, "@dtmDateOfBirth", "01/01/2100", SqlDbType.DateTime);
+                    SetParameter(ref Command, "@strPassword", User.Password, SqlDbType.VarChar);
+                    SetParameter(ref Command, "@intStateID", User.intStateID, SqlDbType.Int);
+                    SetParameter(ref Command, "@intGenderID", User.intGenderID, SqlDbType.Int);
+                    SetParameter(ref Command, "@strCity", User.strCity, SqlDbType.VarChar);
+                    SetParameter(ref Command, "@blnAdmin", 0, SqlDbType.Int);
+                    SetParameter(ref Command, "ReturnValue", 0, SqlDbType.Int, Direction: ParameterDirection.ReturnValue);
 
 					Command.ExecuteReader();
 

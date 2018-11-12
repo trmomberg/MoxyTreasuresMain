@@ -285,8 +285,11 @@ namespace MoxyTreasures.Controllers
 				User.FirstName = Collection["FirstName"];
 				User.LastName = Collection["LastName"];
 				User.Password = Collection["Password"];
+                User.strCity = Collection["strCity"];
+                User.intStateID = Convert.ToInt32(Collection["intStateID"]);
+                User.intGenderID = Convert.ToInt32(Collection["intGenderID"]);
 
-				Models.CUser.ActionStatusTypes Status = User.Save();
+                Models.CUser.ActionStatusTypes Status = User.Save();
 				switch (Status)
 				{
 					case Models.CUser.ActionStatusTypes.UserAlreadyExists:
