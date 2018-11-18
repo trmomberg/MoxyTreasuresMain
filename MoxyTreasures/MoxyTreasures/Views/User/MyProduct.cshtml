@@ -36,7 +36,7 @@
                 </div>
                 <div class="item">
                     <div>@Html.LabelFor(Model => Model.ProductList[0].CategoryID)</div>
-                    <div>@Html.DropDownListFor(Model => Model.ProductList[0].CategoryID, new SelectList(Model.ProductList[0].ProductTypesList, "Value", "Text", (int)Model.ProductList[0].CategoryID))</div>
+                    <div>@Html.DropDownListFor(Model => Model.ProductList[0].CategoryList[0].intCategoryID, new SelectList(Model.ProductList[0].CategoryList, "intCategoryID", "strCategory", Model.ProductList[0].CategoryList[0].intCategoryID), new { @id = "ddlCategories" })</div>
                 </div>
             </div>
             <div class="">

@@ -31,6 +31,12 @@
                         <div width="100%" id="txtarea">@Html.TextAreaFor(Model => Model.Products[0].Description, new { rows = "5", @readonly = true, @resize = false })</div>
                     </div>
                 </div>
+                @if (Model.CurrentUser.UserID == 0)
+                {
+                    <div>
+                        <span style="color:red">Login or Sign Up to Purchase Items!</span>
+                    </div>
+                }
             </div>
 
             @if (Model.Products[0].PrimaryImage != null)
@@ -41,5 +47,4 @@
             }
         </div>
     }
-</div>
     

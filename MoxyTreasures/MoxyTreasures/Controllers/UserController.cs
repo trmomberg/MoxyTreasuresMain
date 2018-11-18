@@ -34,16 +34,38 @@ namespace MoxyTreasures.Controllers
 		public ActionResult Cart()
 		{
 			Models.CUser User = new Models.CUser();
+            Models.CProduct product = new Models.CProduct();
 			Models.CDatabase db = new Models.CDatabase();
 			User = User.GetCurrentUser();
+            double dblSubTotal = 0;
+
             if (User != null && User.UserID > 0)
             {
                 User.Cart = db.GetCart(User.UserID);
+
+                for (int i = 0; i < User.Cart.Count(); i++)
+                {                   
+                    dblSubTotal += User.Cart[i].Price;
+                }
+
+                User.CartSubTotal = dblSubTotal;
             }
 			return View(User);
 		}
 
-		public ActionResult AjaxTest()
+        public ActionResult Categories()
+        {
+            Models.CUser User = new Models.CUser();
+            User = User.GetCurrentUser();
+
+            Models.CCategories categories = new Models.CCategories();
+            categories.CategoryList = Models.CCategories.GetCategories();
+            categories.UserID = User.UserID;
+
+            return View(categories);
+        }
+
+        public ActionResult AjaxTest()
 		{
 			Models.CUser User = new Models.CUser();
 			return View(User);
@@ -72,7 +94,64 @@ namespace MoxyTreasures.Controllers
 			}
 		}
 
-		[HttpPost]
+        [HttpPost]
+        public JsonResult Categories(string strtranstype, string strCategory = "", int intCategoryID = 0)
+        {
+            Models.CCategories category = new Models.CCategories();
+            Models.CDatabase db = new Models.CDatabase();
+
+            if (strtranstype == "add")
+            {
+                category = category.AddCategory(strCategory);
+                if (category.ActionStatus == Models.CCategories.ActionStatusTypes.CategoryAdded)
+                {
+                    return Json(new
+                    {
+                        CategoryID = category.intCategoryID,
+                        strCategory = strCategory,
+                        ActionStatus = Models.CCategories.ActionStatusTypes.CategoryAdded
+                    });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        ActionStatus = Models.CCategories.ActionStatusTypes.CategoryAddFailed
+                    });
+                }
+            }
+            else if (strtranstype == "delete")
+            {
+                int intActionStatusID;
+                category = Models.CCategories.GetCategory(intCategoryID);
+                intActionStatusID = category.DeleteCategory(intCategoryID);
+                if ((Models.CCategories.ActionStatusTypes)intActionStatusID == Models.CCategories.ActionStatusTypes.CategoryDeleted)
+                {
+                    return Json(new
+                    {
+                        intCategoryID = category.intCategoryID,
+                        strCategory = category.strCategory,
+                        ActionStatus = Models.CCategories.ActionStatusTypes.CategoryDeleted
+                    });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        ActionStatus = Models.CCategories.ActionStatusTypes.CategoryDeleteFailed
+                    });
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    ActionStatus = Models.CCategories.ActionStatusTypes.SelectACategory
+                });
+            }
+        }
+
+        [HttpPost]
 		public JsonResult AjaxLogin(string EmailAddress, string Password)
 		{
 			try
@@ -167,8 +246,8 @@ namespace MoxyTreasures.Controllers
 				if (Collection["btnSubmit"] == "save")
 				{
 					Product.Title = (string)Collection["ProductList[0].Title"];
-					Product.Price = Convert.ToInt64(Collection["ProductList[0].Price"]);
-					Product.CategoryID = (Models.ProductTypes)Enum.Parse(typeof(Models.ProductTypes), Collection["ProductList[0].CategoryID"].ToString());
+					Product.Price = Convert.ToInt32(Collection["ProductList[0].Price"]);
+                    Product.CategoryID = Convert.ToInt32(Collection["ProductList[0].CategoryList[0].intCategoryID"]);
 					Product.Description = (string)Collection["ProductList[0].Description"];
 					Product.StatusID = Models.StatusTypes.Active;
 
@@ -286,8 +365,10 @@ namespace MoxyTreasures.Controllers
 				User.LastName = Collection["LastName"];
 				User.Password = Collection["Password"];
                 User.strCity = Collection["strCity"];
+                User.dtmDateOfBirth = Convert.ToDateTime(Collection["dtmDateOfBirth"]);
                 User.intStateID = Convert.ToInt32(Collection["intStateID"]);
                 User.intGenderID = Convert.ToInt32(Collection["intGenderID"]);
+                User.strZipCode = Collection["strZipCode"];
 
                 Models.CUser.ActionStatusTypes Status = User.Save();
 				switch (Status)

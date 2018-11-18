@@ -1,0 +1,104 @@
+﻿@model MoxyTreasures.Models.CCategories
+@{
+    ViewBag.Title = "Categories";
+}
+
+<div class="middle">
+    <h2>Categories</h2>
+    <span style="display:none; color:red;" id="SuccessfulAdd">Category Added Successfully</span>
+    <span style="display:none; color:red;" id="FailedAdd">Category Add Failed</span>
+    <span style="display:none; color:red;" id="SuccessfulDelete">Category Deleted Successfully</span>
+    <span style="display:none; color:red;" id="FailedDelete">Category Delete Failed</span>
+    <span style="display:none; color:red;" id="SelectCategoryToDelete">Select a Category To Delete</span>
+
+    <div class="section">
+        <div class="item">
+            <div>Categories:</div>
+            <div>@Html.DropDownListFor(Model => Model.CategoryList[0].intCategoryID, new SelectList(Model.CategoryList, "intCategoryID", "strCategory", Model.CategoryList[0].intCategoryID), new { @id = "ddlCategories" })</div>
+        </div>
+        <div style="float:left; margin-top:1em">
+            <button onclick="DeleteCategory()">Delete Selected Category</button>
+        </div>
+    </div>
+
+    <div class="section" id="AddCategoryButton" onclick="ToggleCategoryDivs()">
+        <img class="icon" src="~/Content/Images/add-icon.png" />
+        <span>click here to add a Category</span>
+    </div>
+
+    <div class="section" id="AddCategoryDiv" style="display: none">
+        <div class="item">
+            <div>@Html.LabelFor(Model => Model.strCategory)</div>
+            <div>@Html.TextBoxFor(Model => Model.strCategory)</div>
+        </div>
+        <div class="item" style="margin-top: 1em">
+            <button id="btnSubmit" value="add" onclick="AddCategory()">Add Category</button>
+            <button id="btnSubmit" value="cancel" onclick="ToggleCategoryDivs()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function ToggleCategoryDivs() {
+        var x = document.getElementById("AddCategoryDiv");
+        var y = document.getElementById("AddCategoryButton");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+            y.style.display = "none";
+        } else {
+            x.style.display = "none";
+            y.style.display = "block";
+        }
+    }
+
+    function AddCategory() {
+        var Category =
+        {
+            strtranstype: "add",
+            strCategory: $("#strCategory").val()
+        }
+        $.ajax({
+            type: "POST",
+            url: "/User/Categories",
+            data: Category,
+            success: function (CategoryData) {
+                if (CategoryData.ActionStatus == 1) { // Category Add Successful
+                    $("#ddlCategories").append($("<option>").text(CategoryData.strCategory).val(CategoryData.CategoryID));
+                    $("#SuccessfulAdd").css("display", "block");
+                }
+                else
+                    $("#FailedAdd").css("display", "block");
+            },
+            error: function (xhr) {
+                debugger;
+            }
+        });
+    }
+
+    function DeleteCategory() {
+        var Category =
+        {
+            strtranstype: "delete",
+            intCategoryID: $("#ddlCategories option:selected").val()
+        }
+        $.ajax({
+            type: "POST",
+            url: "/User/Categories",
+            data: Category,
+            success: function (CategoryData) {
+                if (CategoryData.ActionStatus == 3) { // Category Delete Successful
+                    $("#ddlCategories option:selected").remove();
+                    $("#SuccessfulDelete").css("display", "block");
+                }
+                else if (CategoryData.ActionStatus == 5) // Category Not Selected
+                    $("#SelectCategoryToDelete").css("display", "block");
+                else
+                    $("#FailedDelete").css("display", "block"); // Category Delete Failed   
+
+            },
+            error: function (xhr) {
+                debugger;
+            }
+        });
+    }
+</script>

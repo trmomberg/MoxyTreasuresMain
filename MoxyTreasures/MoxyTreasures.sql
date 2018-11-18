@@ -17,12 +17,12 @@ IF OBJECT_ID( 'TCart' )							IS NOT NULL		DROP TABLE TCart
 IF OBJECT_ID( 'TImages' )						IS NOT NULL		DROP TABLE TImages
 IF OBJECT_ID( 'TProducts' )						IS NOT NULL		DROP TABLE TProducts
 IF OBJECT_ID( 'TUserLogins' )					IS NOT NULL		DROP TABLE TUserLogins
-IF OBJECT_ID( 'TStates' )						IS NOT NULL		DROP TABLE TStates
 IF OBJECT_ID( 'TCategories' )					IS NOT NULL		DROP TABLE TCategories
-IF OBJECT_ID( 'TStatuses' )						IS NOT NULL		DROP TABLE TStatuses
 IF OBJECT_ID( 'TOrders' )						IS NOT NULL		DROP TABLE TOrders
 IF OBJECT_ID( 'TUsers' )						IS NOT NULL		DROP TABLE TUsers
 IF OBJECT_ID( 'TGenders' )						IS NOT NULL		DROP TABLE TGenders
+IF OBJECT_ID( 'TStates' )						IS NOT NULL		DROP TABLE TStates
+IF OBJECT_ID( 'TStatuses' )						IS NOT NULL		DROP TABLE TStatuses
 
 -- Stored Procedures
 -- Users
@@ -77,6 +77,7 @@ CREATE TABLE TUsers
 	,strCity			VARCHAR(50)				NOT NULL
 	,intStateID			INTEGER					NOT NULL  
 	,intGenderID		INTEGER					NOT NULL
+	,strZipCode			VARCHAR(50)				NOT NULL
 	,blnAdmin			INTEGER					NOT NULL
 	,CONSTRAINT TUsers_PK PRIMARY KEY ( intUserID )
 )
@@ -285,8 +286,8 @@ VALUES (0, 'Male')
 	  ,(1, 'Female')
 	  ,(2, 'Other')
 
-INSERT INTO TUsers (intUserID, strFirstName, strLastName, strEmailAddress, dtmDateOfBirth, strCity, intstateID, intGenderID,  blnAdmin)
-VALUES (0, 'Empty', 'User', '', '01/01/2100', '', 1, 1, 0)
+INSERT INTO TUsers (intUserID, strFirstName, strLastName, strEmailAddress, dtmDateOfBirth, strCity, intstateID, intGenderID,  strZipCode, blnAdmin)
+VALUES (0, 'Empty', 'User', '', '01/01/2100', '', 1, 1, '', 0)
 
 INSERT INTO TCategories (intCategoryID, strCategory)
 VALUES  (0, '')
@@ -296,6 +297,13 @@ VALUES  (0, '')
 	   ,(4, 'Bracelet')
 	   ,(5, 'Clothing')
 	   ,(6, 'Other')
+
+INSERT INTO TStatuses (intStatusID, strStatus)
+VALUES  (0, 'Unknown')
+	   ,(1, 'Cart')
+	   ,(2, 'Ordered')
+	   ,(3, 'Complete')
+
 
 -- --------------------------------------------------------------------------------
 -- Stored Procedures
@@ -335,6 +343,7 @@ CREATE PROCEDURE uspAddUser
 	,@intStateID			INTEGER
 	,@strCity				VARCHAR(50)	
 	,@intGenderID			INTEGER
+	,@strZipCode			VARCHAR(50)
 	,@blnAdmin				BIT
 AS
 BEGIN
@@ -360,8 +369,8 @@ BEGIN
 				SELECT @intUserID = COALESCE ( @intUserID, 1 )
 
 					-- Insert User Values
-				INSERT INTO TUsers (intUserID, strFirstName, strLastName, strEmailAddress, dtmDateOfBirth, strCity, intstateID, intGenderID,  blnAdmin)
-				VALUES (@intUserID, @strFirstName, @strLastName, @strEmailAddress, @dtmDateOfBirth, @strCity, @intStateID, @intGenderID, @blnAdmin)
+				INSERT INTO TUsers (intUserID, strFirstName, strLastName, strEmailAddress, dtmDateOfBirth, strCity, intstateID, intGenderID, strZipCode, blnAdmin)
+				VALUES (@intUserID, @strFirstName, @strLastName, @strEmailAddress, @dtmDateOfBirth, @strCity, @intStateID, @intGenderID, @strZipCode, @blnAdmin)
 		
 				DECLARE @salt UNIQUEIDENTIFIER=NEWID()
 		
@@ -387,6 +396,7 @@ CREATE PROCEDURE uspEditUser
 	,@intStateID			INTEGER		= NULL	
 	,@strCity				VARCHAR(50)	= NULL
 	,@intGenderID			INTEGER		= NULL
+	,@strZipCode			VARCHAR(50)	= NULL
 
 AS
 BEGIN
@@ -457,6 +467,12 @@ BEGIN
 		UPDATE TUsers SET intGenderID = @intGenderID WHERE intUserID = @intUserID
 	END
 
+	-- Check Zip
+	IF @strZipCode IS NOT NULL
+	BEGIN
+		UPDATE TUsers SET strZipCode = @strZipCode WHERE intUserID = @intUserID
+	END
+
 	-- Check Password
 	IF @strPassword IS NOT NULL
 	BEGIN
@@ -512,7 +528,7 @@ CREATE PROCEDURE uspAddProduct
 	,@intCategoryID			INT
 	,@strTitle				VARCHAR(50)
 	,@strDescription		VARCHAR(50)
-	,@intPrice				INT
+	,@intPrice				INT		
 
 AS
 BEGIN
@@ -547,7 +563,7 @@ CREATE PROCEDURE uspEditProduct
 	,@strTitle				VARCHAR(50) = NULL
 	,@strDescription		VARCHAR(50) = NULL
 	,@intPrice				INT = NULL
-	,@intStatusID			INT = NULL
+
 	
 AS
 BEGIN
@@ -627,7 +643,7 @@ BEGIN
 			VALUES (@intCategoryID, @strCategory)
 		
 		COMMIT TRANSACTION	
-		RETURN 1 -- New record created
+		RETURN @intCategoryID -- New record created
 	END
 END
 GO
@@ -1044,6 +1060,7 @@ EXEC uspAddUser
 	@dtmDateOfBirth     = '',
 	@intStateID         = 1,
 	@intGenderID        = 1,
+	@strZipCode		    = '45251',
 	@blnAdmin			= 1
 
 EXEC uspAddUser
@@ -1055,6 +1072,7 @@ EXEC uspAddUser
 	@dtmDateOfBirth     = '',
 	@intStateID         = 1,
 	@intGenderID        = 1,
+	@strZipCode		    = '',
 	@blnAdmin			= 0
 
 SELECT * FROM TUsers

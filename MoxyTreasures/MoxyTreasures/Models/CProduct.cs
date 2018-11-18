@@ -19,14 +19,6 @@ namespace MoxyTreasures.Models
 			this.StatusTypesList.Add(new SelectListItem() { Value = "1", Text = " " });
 			this.StatusTypesList.Add(new SelectListItem() { Value = "2", Text = " " });
 
-			this.ProductTypesList = new List<SelectListItem>();
-			this.ProductTypesList.Add(new SelectListItem() { Value = "0", Text = " " });
-			this.ProductTypesList.Add(new SelectListItem() { Value = "1", Text = "Necklace" });
-			this.ProductTypesList.Add(new SelectListItem() { Value = "2", Text = "Bracelet" });
-			this.ProductTypesList.Add(new SelectListItem() { Value = "3", Text = "Earring" });
-			this.ProductTypesList.Add(new SelectListItem() { Value = "4", Text = "Ring" });
-            this.ProductTypesList.Add(new SelectListItem() { Value = "5", Text = "Other" });
-
         }
 
         public int          ProductID     { get; set; }  
@@ -36,12 +28,12 @@ namespace MoxyTreasures.Models
         public CImage       PrimaryImage  { get; set; }
         public StatusTypes  StatusID      { get; set; }
         [DisplayName("Category")]
-        public ProductTypes CategoryID    { get; set; }
+        public int CategoryID    { get; set; }
+        public double dblCartSubTotal { get; set; }
 
-
-		public List<SelectListItem> StatusTypesList;
-		public List<SelectListItem> ProductTypesList;
+        public List<SelectListItem> StatusTypesList;
         public ActionStatusTypes ActionStatus { get; set; }
+        public List<CCategories> CategoryList = CCategories.GetCategories();
 
         public enum ActionStatusTypes
         {

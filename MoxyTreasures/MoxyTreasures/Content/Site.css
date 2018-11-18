@@ -130,3 +130,7 @@ div, input[type=text], textarea, select, input[type=password] {
 #txtarea{
     resize:none;
 }
+.TextBoxAsLabel{
+    border:none;
+    border: 1px solid white;
+}

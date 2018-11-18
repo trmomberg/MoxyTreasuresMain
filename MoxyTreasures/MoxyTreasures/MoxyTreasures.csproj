@@ -200,11 +200,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\CCategories.cs" />
     <Compile Include="Models\CFilter.cs" />
     <Compile Include="Models\CHome.cs" />
     <Compile Include="Models\CImage.cs" />
     <Compile Include="Models\CProduct.cs" />
-    <Compile Include="Models\CProgram.cs" />
     <Compile Include="Models\CUser.cs" />
     <Compile Include="Models\CDatabase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -261,6 +261,7 @@
     <Content Include="Views\User\SignOut.cshtml" />
     <Content Include="Views\Home\ProductDetails.cshtml" />
     <Content Include="Views\User\Cart.cshtml" />
+    <Content Include="Views\User\Categories.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

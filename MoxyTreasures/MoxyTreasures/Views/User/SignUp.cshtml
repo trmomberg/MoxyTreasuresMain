@@ -25,6 +25,11 @@
     </div>
 
     <div class="Section">
+        <div class="top">@Html.LabelFor(Model => Model.dtmDateOfBirth)</div>
+        <div>@Html.TextBoxFor(Model => Model.dtmDateOfBirth)</div>
+    </div>
+
+    <div class="Section">
         <div class="top">@Html.LabelFor(Model => Model.EmailAddress)</div>
         <div>@Html.TextBoxFor(Model => Model.EmailAddress)</div>
     </div>
@@ -42,6 +47,11 @@
     <div class="Section">
         <div class="top">@Html.LabelFor(Model => Model.intStateID)</div>
         <div>@Html.DropDownListFor(Model => Model.intStateID, new SelectList(Model.StatesList, "Value", "Text", Model.StatesList))</div>
+    </div>
+
+    <div class="Section">
+        <div class="top">@Html.LabelFor(Model => Model.strZipCode)</div>
+        <div>@Html.TextBoxFor(Model => Model.strZipCode)</div>
     </div>
 
     @if (Model.ActionStatus != MoxyTreasures.Models.CUser.ActionStatusTypes.UserUpdated)

@@ -88,6 +88,9 @@ namespace MoxyTreasures.Models
 		public List<CProduct> ProductList = new List<CProduct>();
 		public List<CProduct> Cart = new List<CProduct>();
 
+        [DisplayName("Sub Total:")]
+        public double CartSubTotal { get; set; }
+        
         [DisplayName("Address")]
         public string strAddress { get; set; }
 
@@ -102,6 +105,13 @@ namespace MoxyTreasures.Models
 
         [DisplayName("Gender")]
         public int intGenderID { get; set; }
+
+        [DisplayName("Zip Code")]
+        public string strZipCode { get; set; }
+
+        [DisplayName("Date Of Birth")]
+        public DateTime? dtmDateOfBirth { get; set; }
+
         public bool blnAdmin { get; set; }
         public List<SelectListItem> GenderList;
         public List<SelectListItem> StatesList;

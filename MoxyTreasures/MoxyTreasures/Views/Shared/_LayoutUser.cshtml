@@ -18,11 +18,11 @@
                 {
                     @Html.ActionLink("Login", "LogIn", "User")
                     @Html.ActionLink("Sign Up", "SignUp", "User")
-                    @Html.ActionLink("My Cart", "Cart", "User")
                 }
                 else if (Model.blnAdmin == true)
                 {
-                    @Html.ActionLink("Add Product", "MyProducts", "User")
+                    @Html.ActionLink("Manage Products", "MyProducts", "User")
+                    @Html.ActionLink("Manage Categories", "Categories", "User")
                     @Html.ActionLink("Email", "", "")
                     @Html.ActionLink("Data", "", "")
                     @Html.ActionLink("Log Out", "SignOut", "User")

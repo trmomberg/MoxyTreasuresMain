@@ -9,6 +9,7 @@ namespace MoxyTreasures.Models
 {
 	public class CDatabase
 	{
+        #region Connection
         // Open Connection \/
         private int OpenDBConnection(ref SqlConnection SQLConn)
         {
@@ -45,7 +46,9 @@ namespace MoxyTreasures.Models
                 throw new Exception(ex.Message);
             }
         }
+        #endregion
 
+        #region Get Functions
         // Get Product List \
         public List<CProduct> GetProducts(int intProductID = 0)
         {
@@ -61,7 +64,6 @@ namespace MoxyTreasures.Models
                     SqlDataAdapter da = new SqlDataAdapter("uspSelectProduct", Connection);
                     da.SelectCommand.CommandType = System.Data.CommandType.StoredProcedure;
                     DataSet ds = new DataSet();
-                    int intCategoryID;
                     int intStatusID;
 
                     if (intProductID != 0)
@@ -82,47 +84,9 @@ namespace MoxyTreasures.Models
                                 Product.Title			= (dr["strTitle"]).ToString();
                                 Product.Description		= (dr["strDescription"]).ToString();
                                 Product.Price			= Convert.ToDouble((dr["intPrice"]));
-                                intStatusID				= Convert.ToInt32((dr["intStatusID"]));
-                                intCategoryID			= Convert.ToInt32((dr["intCategoryID"]));
+                                Product.CategoryID			= Convert.ToInt32((dr["intCategoryID"]));
 								Product.PrimaryImage = GetPrimaryImage(Product.ProductID);                             
 
-                                switch (intStatusID)
-                                {
-                                    case 0:
-                                        Product.StatusID = StatusTypes.Unknown;
-                                        break;
-                                    case 1:
-                                        Product.StatusID = StatusTypes.Active;
-                                        break;
-                                    case 2:
-                                        Product.StatusID = StatusTypes.Sold;
-                                        break;
-                                    case 3:
-                                        Product.StatusID = StatusTypes.Closed;
-                                        break;
-                                }
-
-                                switch (intCategoryID)
-                                {
-                                    case 0:
-                                        Product.CategoryID = ProductTypes.Unknown;
-                                        break;
-                                    case 1:
-                                        Product.CategoryID = ProductTypes.Necklace;
-                                        break;
-                                    case 2:
-                                        Product.CategoryID = ProductTypes.Bracelet;
-                                        break;
-                                    case 3:
-                                        Product.CategoryID = ProductTypes.Earring;
-                                        break;
-                                    case 4:
-                                        Product.CategoryID = ProductTypes.Ring;
-                                        break;
-                                    case 5:
-                                        Product.CategoryID = ProductTypes.Other;
-                                        break;
-                                }
                                 ProductList.Add(Product);
                             }
                         }                                             
@@ -155,7 +119,6 @@ namespace MoxyTreasures.Models
 					SqlDataAdapter da = new SqlDataAdapter("uspSelectProduct", Connection);
 					da.SelectCommand.CommandType = System.Data.CommandType.StoredProcedure;
 					DataSet ds = new DataSet();
-					int intCategoryID;
 					int intStatusID;
 					
 					SetParameter(ref da, "@intProductID", intProductID, SqlDbType.Int);
@@ -170,47 +133,9 @@ namespace MoxyTreasures.Models
 						Product.Title = (dr["strTitle"]).ToString();
 						Product.Description = (dr["strDescription"]).ToString();
 						Product.Price = Convert.ToDouble((dr["intPrice"]));
-						intStatusID = Convert.ToInt32((dr["intStatusID"]));
-						intCategoryID = Convert.ToInt32((dr["intCategoryID"]));
+						Product.CategoryID = Convert.ToInt32((dr["intCategoryID"]));
 						Product.PrimaryImage = GetPrimaryImage(Product.ProductID);
 
-						switch (intStatusID)
-						{
-							case 0:
-								Product.StatusID = StatusTypes.Unknown;
-								break;
-							case 1:
-								Product.StatusID = StatusTypes.Active;
-								break;
-							case 2:
-								Product.StatusID = StatusTypes.Sold;
-								break;
-							case 3:
-								Product.StatusID = StatusTypes.Closed;
-								break;
-						}
-
-						switch (intCategoryID)
-						{
-                            case 0:
-                                Product.CategoryID = ProductTypes.Unknown;
-                                break;
-                            case 1:
-                                Product.CategoryID = ProductTypes.Necklace;
-                                break;
-                            case 2:
-                                Product.CategoryID = ProductTypes.Bracelet;
-                                break;
-                            case 3:
-                                Product.CategoryID = ProductTypes.Earring;
-                                break;
-                            case 4:
-                                Product.CategoryID = ProductTypes.Ring;
-                                break;
-                            case 5:
-                                Product.CategoryID = ProductTypes.Other;
-                                break;
-                        }
 					}
 
 					finally
@@ -290,6 +215,154 @@ namespace MoxyTreasures.Models
 			}
         }
 
+        // Get User \/
+        public List<CCategories> GetCategories(int intCategoryID = 0)
+        {
+
+            SqlConnection Connection = new SqlConnection();
+            List<CCategories> CategoryList = new List<CCategories>();
+
+            try
+            {
+
+                if (OpenDBConnection(ref Connection) == 0)
+                {
+                    SqlDataAdapter da = new SqlDataAdapter("uspSelectCategory", Connection);
+                    da.SelectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                    DataSet ds = new DataSet();
+
+                    if (intCategoryID != 0)
+                    {
+                        SetParameter(ref da, "@intCategoryID", intCategoryID, SqlDbType.Int);
+                    }
+                    else
+                    {
+                        SetParameter(ref da, "@intCategoryID", null, SqlDbType.Int);
+                    }
+
+                    try
+                    {
+                        da.Fill(ds);
+
+                        foreach (DataTable dt in ds.Tables)
+                        {
+                            foreach (DataRow dr in dt.Rows)
+                            {
+                                CCategories Category = new CCategories();
+                                Category.intCategoryID = Convert.ToInt32((dr["intCategoryID"]));
+                                Category.strCategory = (dr["strCategory"]).ToString();
+
+                                CategoryList.Add(Category);
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        CloseDBConnection(ref Connection);
+                    }
+                }
+                // return CategoryList;
+                return CategoryList;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        // Get Primary Image \
+        public CImage GetPrimaryImage(int intProductID)
+        {
+            try
+            {
+                SqlConnection Connection = null;
+
+                if (OpenDBConnection(ref Connection) == 0)
+                {
+                    SqlDataAdapter da = new SqlDataAdapter("uspSelectProductPrimaryImage", Connection);
+                    DataSet ds = new DataSet();
+
+                    SetParameter(ref da, "@intProductID", intProductID, SqlDbType.Int);
+
+                    try
+                    {
+                        da.Fill(ds);
+                    }
+                    finally
+                    {
+                        CloseDBConnection(ref Connection);
+                    }
+
+                    // Load the primary Image
+                    CImage PrimaryImage = new CImage();
+                    if (ds.Tables.Count != 0)
+                    {
+                        DataRow dr;
+                        dr = ds.Tables[0].Rows[0];
+                        PrimaryImage.ImageID = (int)dr["intImageID"];
+                        PrimaryImage.FileName = (string)dr["strFileName"];
+                        PrimaryImage.FileExtension = (string)dr["strImageType"];
+                        PrimaryImage.FileSize = (int)dr["intImageSize"];
+                        PrimaryImage.FileBytes = (byte[])dr["ImageData"];
+                    }
+
+                    return PrimaryImage;
+                }
+                else
+                {
+                    return null;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public List<CProduct> GetCart(int intUserID)
+        {
+            try
+            {
+                SqlConnection Connection = null;
+                CProduct Product = new CProduct();
+                List<CProduct> Cart = new List<CProduct>();
+                int intProductID = 0;
+
+                if (OpenDBConnection(ref Connection) == 0)
+                {
+                    SqlDataAdapter da = new SqlDataAdapter("uspGetCart", Connection);
+                    da.SelectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                    DataSet ds = new DataSet();
+
+                    SetParameter(ref da, "@intUserID", intUserID, SqlDbType.Int);
+
+                    da.Fill(ds);
+
+                    foreach (DataTable dt in ds.Tables)
+                    {
+                        foreach (DataRow dr in dt.Rows)
+                        {
+                            intProductID = (int)dr["intProductID"];
+                            Product = GetProduct(intProductID);
+                            Cart.Add(Product);
+                        }
+                    }
+
+                }
+
+                CloseDBConnection(ref Connection);
+                return Cart;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        #endregion
+
+        #region Delete Functions
         // Delete Product \
         public bool DeleteProduct(int intProductID = 0)
         {
@@ -352,6 +425,43 @@ namespace MoxyTreasures.Models
                 throw new Exception(ex.Message);
             }
         }
+
+        // Delete Product \
+        public bool DeleteCategory(int intCategoryID = 0)
+        {
+            try
+            {
+
+                SqlConnection Connection = new SqlConnection();
+                if (OpenDBConnection(ref Connection) == 0)
+                {
+                    SqlCommand cm = new SqlCommand("uspDeleteCategory", Connection);
+
+                    if (intCategoryID > 0)
+                    {
+                        SetParameter(ref cm, "@intCategoryID", intCategoryID, SqlDbType.Int);
+                    }
+                    cm.ExecuteNonQuery();
+
+                    CloseDBConnection(ref Connection);
+
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        #endregion
+
+        #region Update Functions
 
         // Update Product \
         public int UpdateProduct(CProduct Product)
@@ -435,7 +545,12 @@ namespace MoxyTreasures.Models
 					SetParameter(ref Command, "@strLastName", User.LastName, SqlDbType.VarChar);
 					SetParameter(ref Command, "@strEmailAddress", User.EmailAddress, SqlDbType.VarChar);
 					SetParameter(ref Command, "@strPassword", User.Password, SqlDbType.VarChar);
-					SetParameter(ref Command, "ReturnValue", 0, SqlDbType.Int, Direction: ParameterDirection.ReturnValue);
+                    SetParameter(ref Command, "@dtmDateOfBirth", User.dtmDateOfBirth, SqlDbType.DateTime);
+                    SetParameter(ref Command, "@intStateID", User.intStateID, SqlDbType.VarChar);
+                    SetParameter(ref Command, "@strCity", User.strCity, SqlDbType.VarChar);
+                    SetParameter(ref Command, "@intGenderID", User.intGenderID, SqlDbType.VarChar);
+                    SetParameter(ref Command, "@strZipCode", User.strZipCode, SqlDbType.VarChar);
+                    SetParameter(ref Command, "ReturnValue", 0, SqlDbType.Int, Direction: ParameterDirection.ReturnValue);
 
 					Command.ExecuteReader();
 
@@ -464,6 +579,48 @@ namespace MoxyTreasures.Models
             }
         }
 
+        // Update Product image\
+        public int UpdateProductImage(int intProductID, string strFileName, string strFileExtension, int intFileSize, byte[] bytes)
+        {
+            try
+            {
+                SqlConnection Connection = null;
+                int intIsPrimary = 0;
+
+                if (OpenDBConnection(ref Connection) == 0)
+                {
+                    SqlCommand cm = new SqlCommand("uspEditImage", Connection);
+
+                    // If there is no primary image for the product, set this image to primary
+                    if (HasPrimaryImage(intProductID) == false) { intIsPrimary = 1; };
+
+                    SetParameter(ref cm, "@intProductID", intProductID, SqlDbType.Int);
+                    SetParameter(ref cm, "@blnPrimaryImage", intIsPrimary, SqlDbType.Bit);
+                    SetParameter(ref cm, "@strFileName", strFileName, SqlDbType.VarChar);
+                    SetParameter(ref cm, "@strImageType", strFileExtension, SqlDbType.VarChar);
+                    SetParameter(ref cm, "@intImageSize", intFileSize, SqlDbType.Int);
+                    SetParameter(ref cm, "@ImageData", bytes, SqlDbType.VarBinary);
+
+                    cm.ExecuteReader();
+                    CloseDBConnection(ref Connection);
+
+                    return 0; //success
+                }
+                else
+                {
+                    return -1; // No database connection
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        #endregion
+
+        #region Insert Functions
+
         // Insert Product \
         public int InsertProduct(CProduct Product)
         {
@@ -479,7 +636,6 @@ namespace MoxyTreasures.Models
                     SetParameter(ref Command, "@strTitle", Product.Title, SqlDbType.VarChar);
                     SetParameter(ref Command, "@strDescription", Product.Description, SqlDbType.VarChar);
                     SetParameter(ref Command, "@intPrice", Product.Price, SqlDbType.Int);
-                    SetParameter(ref Command, "@intStatusID", Product.StatusID, SqlDbType.Int);
                     SetParameter(ref Command, "@intCategoryID", Product.CategoryID, SqlDbType.Int);
 
                     Command.ExecuteReader();
@@ -515,11 +671,12 @@ namespace MoxyTreasures.Models
 					SetParameter(ref Command, "@strFirstName", User.FirstName, SqlDbType.VarChar);
 					SetParameter(ref Command, "@strLastName", User.LastName, SqlDbType.VarChar);
 					SetParameter(ref Command, "@strEmailAddress", User.EmailAddress, SqlDbType.VarChar);
-                    SetParameter(ref Command, "@dtmDateOfBirth", "01/01/2100", SqlDbType.DateTime);
+                    SetParameter(ref Command, "@dtmDateOfBirth", User.dtmDateOfBirth, SqlDbType.DateTime);
                     SetParameter(ref Command, "@strPassword", User.Password, SqlDbType.VarChar);
                     SetParameter(ref Command, "@intStateID", User.intStateID, SqlDbType.Int);
                     SetParameter(ref Command, "@intGenderID", User.intGenderID, SqlDbType.Int);
                     SetParameter(ref Command, "@strCity", User.strCity, SqlDbType.VarChar);
+                    SetParameter(ref Command, "@strZipCode", User.strZipCode, SqlDbType.VarChar);
                     SetParameter(ref Command, "@blnAdmin", 0, SqlDbType.Int);
                     SetParameter(ref Command, "ReturnValue", 0, SqlDbType.Int, Direction: ParameterDirection.ReturnValue);
 
@@ -591,44 +748,49 @@ namespace MoxyTreasures.Models
             }
         }
 
-        // Update Product image\
-        public int UpdateProductImage(int intProductID, string strFileName, string strFileExtension, int intFileSize, byte[] bytes)
+        // Insert Category \
+        public int InsertCategory(string strCategory)
         {
             try
             {
                 SqlConnection Connection = null;
-                int intIsPrimary = 0;
 
                 if (OpenDBConnection(ref Connection) == 0)
                 {
-                    SqlCommand cm = new SqlCommand("uspEditImage", Connection);
+                    CCategories category = new CCategories();
+                    int intReturnID = 0;
 
-                    // If there is no primary image for the product, set this image to primary
-                    if (HasPrimaryImage(intProductID) == false) { intIsPrimary = 1; };
+                    SqlCommand cm = new SqlCommand("uspAddCategory", Connection);
 
-                    SetParameter(ref cm, "@intProductID", intProductID, SqlDbType.Int);
-                    SetParameter(ref cm, "@blnPrimaryImage", intIsPrimary, SqlDbType.Bit);
-                    SetParameter(ref cm, "@strFileName", strFileName, SqlDbType.VarChar);
-                    SetParameter(ref cm, "@strImageType", strFileExtension, SqlDbType.VarChar);
-                    SetParameter(ref cm, "@intImageSize", intFileSize, SqlDbType.Int);
-					SetParameter(ref cm, "@ImageData", bytes, SqlDbType.VarBinary);
+                    SetParameter(ref cm, "@strCategory", strCategory, SqlDbType.VarChar);
+                    SetParameter(ref cm, "ReturnValue", 0, SqlDbType.Int, Direction: ParameterDirection.ReturnValue);
 
-					cm.ExecuteReader();
+                    cm.ExecuteReader();
+
                     CloseDBConnection(ref Connection);
 
-                    return 0; //success
+                    if (!Convert.IsDBNull(cm.Parameters["ReturnValue"].Value))
+                    {
+                        intReturnID = (int)cm.Parameters["ReturnValue"].Value;
+                        
+                    }
+
+                    return intReturnID; //success
                 }
                 else
                 {
                     return -1; // No database connection
                 }
+
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
         }
-        
+
+        #endregion
+
         // Has Primary Image \
         public bool HasPrimaryImage(int intProductID)
         {
@@ -676,55 +838,6 @@ namespace MoxyTreasures.Models
             }
         }
 
-        // Get Primary Image \
-        public CImage GetPrimaryImage(int intProductID)
-        {
-            try
-            {
-                SqlConnection Connection = null;
-
-                if (OpenDBConnection(ref Connection) == 0)
-                {
-                    SqlDataAdapter da = new SqlDataAdapter("uspSelectProductPrimaryImage", Connection);
-                    DataSet ds = new DataSet();
-
-                    SetParameter(ref da, "@intProductID", intProductID, SqlDbType.Int);
-
-                    try
-                    {
-                        da.Fill(ds);
-                    }
-                    finally
-                    {
-                        CloseDBConnection(ref Connection);
-                    }
-
-                    // Load the primary Image
-                    CImage PrimaryImage = new CImage();
-                    if (ds.Tables.Count != 0)
-                    {
-						DataRow dr;
-						dr = ds.Tables[0].Rows[0];
-                        PrimaryImage.ImageID = (int)dr["intImageID"];
-                        PrimaryImage.FileName = (string)dr["strFileName"];
-                        PrimaryImage.FileExtension = (string)dr["strImageType"];
-                        PrimaryImage.FileSize = (int)dr["intImageSize"];
-                        PrimaryImage.FileBytes = (byte[])dr["ImageData"];                       
-                    }
-
-                    return PrimaryImage;
-                }
-                else
-                {
-                    return null;
-                }
-                              
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
         
         // login \/
         public int Login(string strEmailAddress, string strPassword)
@@ -799,45 +912,7 @@ namespace MoxyTreasures.Models
             }
         }
 
-		public List<CProduct> GetCart(int intUserID)
-		{
-			try
-			{
-				SqlConnection Connection = null;
-				CProduct Product = new CProduct();
-				List<CProduct> Cart = new List<CProduct>();
-				int intProductID = 0;
-
-				if (OpenDBConnection(ref Connection) == 0)
-				{
-					SqlDataAdapter da = new SqlDataAdapter("uspGetCart", Connection);
-					da.SelectCommand.CommandType = System.Data.CommandType.StoredProcedure;
-					DataSet ds = new DataSet();
-				
-					SetParameter(ref da, "@intUserID", intUserID, SqlDbType.Int);
-									
-					da.Fill(ds);
-
-					foreach (DataTable dt in ds.Tables)
-					{
-						foreach (DataRow dr in dt.Rows)
-						{
-							intProductID = (int)dr["intProductID"];
-							Product = GetProduct(intProductID);
-							Cart.Add(Product);
-						}
-					}
-					
-				}
-
-				CloseDBConnection(ref Connection);
-				return Cart;
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(ex.Message);
-			}
-		}
+		
 
 
 		public bool IsWatched(int intProductID, int intUserID)
