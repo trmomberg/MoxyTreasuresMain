@@ -359,28 +359,49 @@ namespace MoxyTreasures.Controllers
 		{
 			try
 			{
-				Models.CUser User = new Models.CUser();
-				User.EmailAddress = Collection["EmailAddress"];
-				User.FirstName = Collection["FirstName"];
-				User.LastName = Collection["LastName"];
-				User.Password = Collection["Password"];
-                User.strCity = Collection["strCity"];
-                User.dtmDateOfBirth = Convert.ToDateTime(Collection["dtmDateOfBirth"]);
-                User.intStateID = Convert.ToInt32(Collection["intStateID"]);
-                User.intGenderID = Convert.ToInt32(Collection["intGenderID"]);
-                User.strZipCode = Collection["strZipCode"];
+                if (ModelState.IsValid)
+                {
+                    Models.CUser User = new Models.CUser();
+                    User.EmailAddress = Collection["EmailAddress"];
+                    User.FirstName = Collection["FirstName"];
+                    User.LastName = Collection["LastName"];
+                    User.Password = Collection["Password"];
+                    User.strCity = Collection["strCity"];
+                    User.strAddress = Collection["strAddress"];
+                    if (Collection["dtmDateOfBirth"] != "")
+                    {
+                        User.dtmDateOfBirth = Convert.ToDateTime(Collection["dtmDateOfBirth"]);
+                    }
+                    else
+                    {
+                        User.dtmDateOfBirth = DateTime.MinValue;
+                    }
+                    User.intStateID = Convert.ToInt32(Collection["intStateID"]);
+                    User.intGenderID = Convert.ToInt32(Collection["intGenderID"]);
+                    User.strZipCode = Collection["strZipCode"];
+                    string str = Collection["blnEmailList"];
+                    if (Collection["blnEmailList"] == "true,false")
+                    {
+                        User.blnEmailList = true;
+                    }
+                    else
+                    {
+                        User.blnEmailList = false;
+                    }
+                    //User.blnEmailList = Convert.ToInt32(Collection["blnEmailList"]);
 
-                Models.CUser.ActionStatusTypes Status = User.Save();
-				switch (Status)
-				{
-					case Models.CUser.ActionStatusTypes.UserAlreadyExists:
-						break;
-					case Models.CUser.ActionStatusTypes.UserUpdated:
-						User.SetCurrentUser();
-						return RedirectToAction("MyProfile", "User");
-					default:
-						break;
-				}
+                    Models.CUser.ActionStatusTypes Status = User.Save();
+                    switch (Status)
+                    {
+                        case Models.CUser.ActionStatusTypes.UserAlreadyExists:
+                            break;
+                        case Models.CUser.ActionStatusTypes.UserUpdated:
+                            User.SetCurrentUser();
+                            return RedirectToAction("MyProfile", "User");
+                        default:
+                            break;
+                    }
+                }
 				return View(User);
 			}
 			catch (Exception ex)

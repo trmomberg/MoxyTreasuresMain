@@ -539,8 +539,13 @@ namespace MoxyTreasures.Models
 				{
 					SqlCommand Command = new SqlCommand("uspEditUser", Connection);
 					int ReturnValue = -1;
+                    int intEmailList = 0;
+                    if (User.blnEmailList == true)
+                    {
+                        intEmailList = 1;
+                    }
 
-					SetParameter(ref Command, "@intUserID", User.UserID, SqlDbType.Int);
+                    SetParameter(ref Command, "@intUserID", User.UserID, SqlDbType.Int);
 					SetParameter(ref Command, "@strFirstName", User.FirstName, SqlDbType.VarChar);
 					SetParameter(ref Command, "@strLastName", User.LastName, SqlDbType.VarChar);
 					SetParameter(ref Command, "@strEmailAddress", User.EmailAddress, SqlDbType.VarChar);
@@ -550,6 +555,7 @@ namespace MoxyTreasures.Models
                     SetParameter(ref Command, "@strCity", User.strCity, SqlDbType.VarChar);
                     SetParameter(ref Command, "@intGenderID", User.intGenderID, SqlDbType.VarChar);
                     SetParameter(ref Command, "@strZipCode", User.strZipCode, SqlDbType.VarChar);
+                    SetParameter(ref Command, "@blnEmailList", intEmailList, SqlDbType.Int);
                     SetParameter(ref Command, "ReturnValue", 0, SqlDbType.Int, Direction: ParameterDirection.ReturnValue);
 
 					Command.ExecuteReader();
@@ -666,6 +672,11 @@ namespace MoxyTreasures.Models
 				{
 					SqlCommand Command = new SqlCommand("uspAddUser", Connection);
 					int ReturnValue = -1;
+                    int intEmailList = 0;
+                    if (User.blnEmailList == true)
+                    {
+                        intEmailList = 1;
+                    }
 
 					SetParameter(ref Command, "@intUserID", User.UserID, SqlDbType.Int, Direction: ParameterDirection.Output);
 					SetParameter(ref Command, "@strFirstName", User.FirstName, SqlDbType.VarChar);
@@ -676,8 +687,10 @@ namespace MoxyTreasures.Models
                     SetParameter(ref Command, "@intStateID", User.intStateID, SqlDbType.Int);
                     SetParameter(ref Command, "@intGenderID", User.intGenderID, SqlDbType.Int);
                     SetParameter(ref Command, "@strCity", User.strCity, SqlDbType.VarChar);
+                    SetParameter(ref Command, "@strStreetAddress", User.strAddress, SqlDbType.VarChar);
                     SetParameter(ref Command, "@strZipCode", User.strZipCode, SqlDbType.VarChar);
                     SetParameter(ref Command, "@blnAdmin", 0, SqlDbType.Int);
+                    SetParameter(ref Command, "@blnEmailList", intEmailList, SqlDbType.Int);
                     SetParameter(ref Command, "ReturnValue", 0, SqlDbType.Int, Direction: ParameterDirection.ReturnValue);
 
 					Command.ExecuteReader();

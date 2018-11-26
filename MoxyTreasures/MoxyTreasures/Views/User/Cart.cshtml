@@ -21,12 +21,18 @@
                 <div class="center">@p.Price.ToString("$#,###.00")</div>
             </div>
         }
-        <div class="Section">
-            <div class="top">@Html.LabelFor(Model => Model.CartSubTotal)</div>
-            <div>@Html.TextBoxFor(Model => Model.CartSubTotal, new {@readonly = true, @class="TextBoxAsLabel"})</div>
-        </div>
+        @if (Model.CartSubTotal > 0)
+        {
+            <div class="Section">
+                <div class="top">@Html.LabelFor(Model => Model.CartSubTotal)</div>
+                <div>@Html.TextBoxFor(Model => Model.CartSubTotal, new { @readonly = true, @class = "TextBoxAsLabel" })</div>
+            </div>
 
-        <button style="margin-top:1em">Checkout</button>
-
+            <button style="margin-top:1em">Checkout</button>
+        }
+        else
+        {
+            <p>There is nothing in your cart! Select Items to purchase from the home page</p>
+        }
     </div>
 </div>

@@ -13,16 +13,17 @@ SET NOCOUNT ON			-- Report only errors
 --Tables
 
 IF OBJECT_ID( 'TOrderProductList' )				IS NOT NULL		DROP TABLE TOrderProductList
-IF OBJECT_ID( 'TCart' )							IS NOT NULL		DROP TABLE TCart
 IF OBJECT_ID( 'TImages' )						IS NOT NULL		DROP TABLE TImages
 IF OBJECT_ID( 'TProducts' )						IS NOT NULL		DROP TABLE TProducts
 IF OBJECT_ID( 'TUserLogins' )					IS NOT NULL		DROP TABLE TUserLogins
 IF OBJECT_ID( 'TCategories' )					IS NOT NULL		DROP TABLE TCategories
 IF OBJECT_ID( 'TOrders' )						IS NOT NULL		DROP TABLE TOrders
+IF OBJECT_ID( 'TAddresses' )					IS NOT NULL		DROP TABLE TAddresses
+IF OBJECT_ID( 'TStatuses' )						IS NOT NULL		DROP TABLE TStatuses
+IF OBJECT_ID( 'TAddressTypes' )					IS NOT NULL		DROP TABLE TAddressTypes
+IF OBJECT_ID( 'TStates' )						IS NOT NULL		DROP TABLE TStates
 IF OBJECT_ID( 'TUsers' )						IS NOT NULL		DROP TABLE TUsers
 IF OBJECT_ID( 'TGenders' )						IS NOT NULL		DROP TABLE TGenders
-IF OBJECT_ID( 'TStates' )						IS NOT NULL		DROP TABLE TStates
-IF OBJECT_ID( 'TStatuses' )						IS NOT NULL		DROP TABLE TStatuses
 
 -- Stored Procedures
 -- Users
@@ -36,6 +37,10 @@ IF OBJECT_ID( 'uspSelectCategory' )				IS NOT NULL		DROP PROCEDURE uspSelectCate
 IF OBJECT_ID( 'uspAddCategory' )				IS NOT NULL		DROP PROCEDURE uspAddCategory
 IF OBJECT_ID( 'uspEditCategory' )				IS NOT NULL		DROP PROCEDURE uspEditCategory
 IF OBJECT_ID( 'uspDeleteCategory' )				IS NOT NULL		DROP PROCEDURE uspDeleteCategory
+
+-- Addresses
+IF OBJECT_ID( 'uspAddAddress' )					IS NOT NULL		DROP PROCEDURE uspAddAddress
+IF OBJECT_ID( 'uspEditAddress' )				IS NOT NULL		DROP PROCEDURE uspEditAddress
 
 -- Products
 IF OBJECT_ID( 'uspSelectProduct' )				IS NOT NULL		DROP PROCEDURE uspSelectProduct
@@ -74,12 +79,30 @@ CREATE TABLE TUsers
 	,strLastName		VARCHAR(50)				NOT NULL
 	,strEmailAddress	VARCHAR(50)				NOT NULL
 	,dtmDateOfBirth		DATETIME				NOT NULL
+	,intGenderID		INTEGER					NOT NULL
+	,blnAdmin			INTEGER					NOT NULL
+	,blnEmailList		INTEGER					NOT NULL
+	,CONSTRAINT TUsers_PK PRIMARY KEY ( intUserID )
+)
+
+CREATE TABLE TAddresses
+(
+	 intAddressID		INTEGER					NOT NULL
+	,intUserID			INTEGER					NOT NULL
+	,strStreetAddress	VARCHAR(50)				NOT NULL
 	,strCity			VARCHAR(50)				NOT NULL
 	,intStateID			INTEGER					NOT NULL  
-	,intGenderID		INTEGER					NOT NULL
 	,strZipCode			VARCHAR(50)				NOT NULL
-	,blnAdmin			INTEGER					NOT NULL
-	,CONSTRAINT TUsers_PK PRIMARY KEY ( intUserID )
+	,blnDefaultAddress	BIT						NOT NULL
+	,intAddressTypeID	INTEGER					NOT NULL
+	,CONSTRAINT TAddresses_PK PRIMARY KEY ( intAddressID )
+)
+
+CREATE TABLE TAddressTypes
+(
+	 intAddressTypeID	INTEGER					NOT NULL
+	,strAddressType		VARCHAR(50)				NOT NULL
+	,CONSTRAINT TAddressTypes_PK PRIMARY KEY ( intAddressTypeID )
 )
 
 CREATE TABLE TUserLogins
@@ -120,22 +143,13 @@ CREATE TABLE TImages
 	,CONSTRAINT TImages_PK PRIMARY KEY ( intImageID )
 )
 
-CREATE TABLE TCart
-(
-	 intUserID			INTEGER					NOT NULL
-	,intProductID		INTEGER					NOT NULL
-	,CONSTRAINT TCart_PK PRIMARY KEY ( intProductID,  intUserID )
-)
-
 CREATE TABLE TOrders
 (
 	intOrderID			INTEGER					NOT NULL
    ,intUserID			INTEGER					NOT NULL
    ,intTotal			INTEGER					NOT NULL
    ,dtmDateOfOrder		DATETIME				NOT NULL
-   ,strShippingAddress	VARCHAR(50)				NOT NULL
-   ,strCity				VARCHAR(50)				NOT NULL
-   ,intStateID			INTEGER					NOT NULL
+   ,intShippingAddress	VARCHAR(50)				NOT NULL
    ,intStatusID			INTEGER					NOT NULL
    ,CONSTRAINT TOrders_PK PRIMARY KEY (intOrderID)
 )
@@ -176,55 +190,58 @@ CREATE TABLE TStatuses
 -- #	Child								Parent						Column(s)
 -- -	-----								------						---------
 -- 1	TImages								TProducts					intProductID
--- 2	TCart								TUsers						intUserID
--- 3    TCart								TProducts					intProductID
--- 4	TUsers								TGenders					intGenderID
--- 5	TOrders								TUsers						intUserID
--- 6    TOrders								TState						intStateID
--- 7    TOrderProductList					TOrders						intOrderID
--- 8    TOrderProductList					TProducts					intProductID
--- 9	TProducts							TCategories					intCategoryID
--- 10	TOrders								TStatuses					intStatusID
+-- 2	TUsers								TGenders					intGenderID
+-- 3	TOrders								TUsers						intUserID
+-- 4    TOrderProductList					TOrders						intOrderID
+-- 5    TOrderProductList					TProducts					intProductID
+-- 6	TProducts							TCategories					intCategoryID
+-- 7	TOrders								TStatuses					intStatusID
+-- 8	TAddresses							TUsers						intUserID
+-- 9	TAddresses							TAddressTypes				intAddressTypeID	
+-- 10	TAddresses							TStates						intStateID		
+
 
 -- 1
 ALTER TABLE TImages ADD CONSTRAINT TImages_TProducts_FK
 FOREIGN KEY ( intProductID ) REFERENCES TProducts ( intProductID )
 
 -- 2
-ALTER TABLE TCart ADD CONSTRAINT TCart_TUsers_FK
-FOREIGN KEY ( intUserID ) REFERENCES TUsers ( intUserID )
-
--- 3
-ALTER TABLE TCart ADD CONSTRAINT TCart_TProducts_FK
-FOREIGN KEY ( intProductID ) REFERENCES TProducts ( intProductID )
-
--- 4
 ALTER TABLE TUsers ADD CONSTRAINT TUsers_TGenders_FK
 FOREIGN KEY ( intGenderID ) REFERENCES TGenders ( intGenderID )
 
--- 5
+-- 3
 ALTER TABLE TOrders ADD CONSTRAINT TOrders_TUsers_FK
 FOREIGN KEY ( intUserID ) REFERENCES TUsers ( intUserID )
 
--- 6
-ALTER TABLE TOrders ADD CONSTRAINT TOrders_TStates_FK
-FOREIGN KEY ( intStateID ) REFERENCES TStates ( intStateID )
-
--- 7
+-- 4
 ALTER TABLE TOrderProductList ADD CONSTRAINT TOrderProductList_TOrders_FK
 FOREIGN KEY ( intOrderID ) REFERENCES TOrders ( intOrderID )
 
--- 8
+-- 5
 ALTER TABLE TOrderProductList ADD CONSTRAINT TOrderProductList_TProducts_FK
 FOREIGN KEY ( intProductID ) REFERENCES TProducts ( intProductID )
 
--- 9
+-- 6
 ALTER TABLE TProducts ADD CONSTRAINT TProducts_TCategories_FK
 FOREIGN KEY ( intCategoryID ) REFERENCES TCategories ( intCategoryID )
 
--- 10
+-- 7
 ALTER TABLE TOrders ADD CONSTRAINT TOrders_TStatuses_FK
 FOREIGN KEY ( intStatusID ) REFERENCES TStatuses ( intStatusID )
+
+-- 8
+ALTER TABLE TAddresses ADD CONSTRAINT TAddresses_TAddressTypes_FK
+FOREIGN KEY ( intAddressTypeID ) REFERENCES TAddressTypes ( intAddressTypeID )
+
+-- 9
+ALTER TABLE TAddresses ADD CONSTRAINT TAddresses_TUsers_FK
+FOREIGN KEY ( intUserID ) REFERENCES TUsers ( intUserID )
+
+-- 9
+ALTER TABLE TAddresses ADD CONSTRAINT TAddresses_TStates_FK
+FOREIGN KEY ( intStateID ) REFERENCES TStates ( intStateID )
+
+
 
 -- --------------------------------------------------------------------------------
 -- Insert Values
@@ -286,8 +303,8 @@ VALUES (0, 'Male')
 	  ,(1, 'Female')
 	  ,(2, 'Other')
 
-INSERT INTO TUsers (intUserID, strFirstName, strLastName, strEmailAddress, dtmDateOfBirth, strCity, intstateID, intGenderID,  strZipCode, blnAdmin)
-VALUES (0, 'Empty', 'User', '', '01/01/2100', '', 1, 1, '', 0)
+INSERT INTO TUsers (intUserID, strFirstName, strLastName, strEmailAddress, dtmDateOfBirth, intGenderID, blnAdmin, blnEmailList)
+VALUES (0, 'Empty', 'User', '', '01/01/2100', 1, 0, 1)
 
 INSERT INTO TCategories (intCategoryID, strCategory)
 VALUES  (0, '')
@@ -303,6 +320,11 @@ VALUES  (0, 'Unknown')
 	   ,(1, 'Cart')
 	   ,(2, 'Ordered')
 	   ,(3, 'Complete')
+
+INSERT INTO TAddressTypes(intAddressTypeID, strAddressType)
+VALUES  (0, 'Unknown')
+	   ,(1, 'Billing')
+	   ,(2, 'Shipping')
 
 
 -- --------------------------------------------------------------------------------
@@ -339,12 +361,14 @@ CREATE PROCEDURE uspAddUser
 	,@strLastName			VARCHAR(50)
 	,@strEmailAddress		VARCHAR(50) 
     ,@strPassword			VARCHAR(50)
+	,@strStreetAddress		VARCHAR(50)
 	,@dtmDateOfBirth		DATETIME
 	,@intStateID			INTEGER
 	,@strCity				VARCHAR(50)	
 	,@intGenderID			INTEGER
 	,@strZipCode			VARCHAR(50)
 	,@blnAdmin				BIT
+	,@blnEmailList			BIT
 AS
 BEGIN
     SET NOCOUNT ON
@@ -369,9 +393,20 @@ BEGIN
 				SELECT @intUserID = COALESCE ( @intUserID, 1 )
 
 					-- Insert User Values
-				INSERT INTO TUsers (intUserID, strFirstName, strLastName, strEmailAddress, dtmDateOfBirth, strCity, intstateID, intGenderID, strZipCode, blnAdmin)
-				VALUES (@intUserID, @strFirstName, @strLastName, @strEmailAddress, @dtmDateOfBirth, @strCity, @intStateID, @intGenderID, @strZipCode, @blnAdmin)
-		
+				INSERT INTO TUsers (intUserID, strFirstName, strLastName, strEmailAddress, dtmDateOfBirth, intGenderID, blnAdmin, blnEmailList)
+				VALUES (@intUserID, @strFirstName, @strLastName, @strEmailAddress, @dtmDateOfBirth, @intGenderID, @blnAdmin, @blnEmailList)
+				
+				DECLARE @intAddressID INT
+				SELECT @intAddressID = MAX( intAddressID ) + 1
+				FROM TAddresses (TABLOCKX) -- lock table until the end of transaction
+
+					--default to 1 if table is empty
+				SELECT @intAddressID = COALESCE ( @intAddressID, 1 )
+
+				-- Insert Address Values
+				INSERT INTO TAddresses (intAddressID, intUserID, strStreetAddress, strCity, intStateID, strZipCode, blnDefaultAddress, intAddressTypeID)
+				VALUES (@intAddressID, @intUserID, @strStreetAddress, @strCity, @intStateID, @strZipCode, 1, 0)
+
 				DECLARE @salt UNIQUEIDENTIFIER=NEWID()
 		
 				-- Insert Login Values
@@ -397,7 +432,7 @@ CREATE PROCEDURE uspEditUser
 	,@strCity				VARCHAR(50)	= NULL
 	,@intGenderID			INTEGER		= NULL
 	,@strZipCode			VARCHAR(50)	= NULL
-
+	,@blnEmailList			BIT			= NULL
 AS
 BEGIN
     SET NOCOUNT ON
@@ -449,28 +484,16 @@ BEGIN
 		UPDATE TUsers SET dtmDateOfBirth = @dtmDateOfBirth WHERE intUserID = @intUserID
 	END
 	
-	-- Check State
-	IF @strLastName IS NOT NULL
-	BEGIN
-		UPDATE TUsers SET intStateID = @intStateID WHERE intUserID = @intUserID
-	END
-	
-	-- Check City
-	IF @strLastName IS NOT NULL
-	BEGIN
-		UPDATE TUsers SET strCity = @strCity WHERE intUserID = @intUserID
-	END
-	
 	-- Check Gender
 	IF @strLastName IS NOT NULL
 	BEGIN
 		UPDATE TUsers SET intGenderID = @intGenderID WHERE intUserID = @intUserID
 	END
 
-	-- Check Zip
-	IF @strZipCode IS NOT NULL
+	-- Check Email List
+	IF @blnEmailList IS NOT NULL
 	BEGIN
-		UPDATE TUsers SET strZipCode = @strZipCode WHERE intUserID = @intUserID
+		UPDATE TUsers SET blnEmailList = @blnEmailList WHERE intUserID = @intUserID
 	END
 
 	-- Check Password
@@ -729,6 +752,7 @@ CREATE PROCEDURE uspAddOrder
 	,@intTotal				INT
 	,@strAddress			VARCHAR(50)
 	,@strCity				VARCHAR(50)
+	,@dtmDateOfOrder		DATETIME	
 	,@intStateID			INT
 	,@intStatusID			INT
 AS
@@ -745,8 +769,8 @@ BEGIN
 		--default to 1 if table is empty
 		SELECT @intOrderID = COALESCE ( @intOrderID, 1 )
 		
-		INSERT INTO TOrders(intOrderID, intUserID, intTotal, strShippingAddress, strCity, intStateID, intStatusID)
-		VALUES (@intOrderID, @intUserID, @intTotal, @strAddress, @strCity, @intStateID, @intStatusID)
+		INSERT INTO TOrders(intOrderID, intUserID, intTotal, intStatusID, dtmDateOfOrder)
+		VALUES (@intOrderID, @intUserID, @intTotal, @intStatusID, @dtmDateOfOrder)
 
 	COMMIT TRANSACTION
 
@@ -756,13 +780,11 @@ END
 
 GO
 
--- Edit Product
+-- Edit Order
 GO
 CREATE PROCEDURE uspEditOrder
 	 @intOrderID		    INT	= NULL
 	,@intTotal				INT	= NULL
-	,@strAddress			VARCHAR(50)	= NULL
-	,@strCity				VARCHAR(50)	= NULL
 	,@intStateID			INT	= NULL
 	,@intStatusID			INT
 	
@@ -776,28 +798,97 @@ BEGIN
 		UPDATE TOrders SET intTotal = @intTotal WHERE intOrderID = @intOrderID
 	END
 
-	-- Check Address
-	IF @strAddress IS NOT NULL
+	-- Check Status
+	IF @intStatusID IS NOT NULL
 	BEGIN
-		UPDATE TOrders SET  strShippingAddress = @strAddress WHERE intOrderID = @intOrderID
+		UPDATE TOrders SET intStatusID = @intStatusID WHERE intOrderID = @intOrderID
+	END
+	
+	RETURN 0 -- Order Updated
+END
+GO
+
+-- --------------------------------------------------
+-- Addresses
+-- --------------------------------------------------
+
+-- Add Address
+GO 
+CREATE PROCEDURE uspAddAddress
+	 @intAddressID		INT 
+	,@intUserID			INT
+	,@strStreetAddress	VARCHAR(50)
+	,@strCity			VARCHAR(50)
+	,@intStateID		VARCHAR(50)
+	,@strZipCode		VARCHAR(50)
+	,@intAddressTypeID	INT = 0
+AS
+BEGIN
+    SET NOCOUNT ON
+
+	SET XACT_ABORT ON
+
+	BEGIN TRANSACTION
+
+	SELECT @intAddressID = MAX( intAddressID ) + 1
+		FROM TAddresses (TABLOCKX) -- lock table until the end of transaction
+
+		--default to 1 if table is empty
+		SELECT @intAddressID = COALESCE ( @intAddressID, 1 )
+		
+		INSERT INTO TAddresses(intAddressID, intUserID, strStreetAddress, strCity, intStateID, strZipCode, intAddressTypeID)
+		VALUES (@intAddressID, @intUserID, @strStreetAddress, @strCity, @intStateID, @strZipCode, @intAddressID)
+
+	COMMIT TRANSACTION
+
+	RETURN @intAddressID
+
+END
+
+GO
+
+-- Edit Address
+GO
+CREATE PROCEDURE uspEditAddress
+	 @intAddressID		INT 
+	,@strStreetAddress	VARCHAR(50)
+	,@strCity			VARCHAR(50)
+	,@intStateID		VARCHAR(50)
+	,@strZipCode		VARCHAR(50)
+	,@intAddressTypeID	INT 
+	
+AS
+BEGIN
+    SET NOCOUNT ON
+
+	-- Check Street
+	IF @strStreetAddress IS NOT NULL
+	BEGIN
+		UPDATE TAddresses SET strStreetAddress = @strStreetAddress WHERE intAddressID = @intAddressID
 	END
 
 	-- Check City
 	IF @strCity IS NOT NULL
 	BEGIN
-		UPDATE TOrders SET strCity	= @strCity WHERE intOrderID = @intOrderID
+		UPDATE TAddresses SET strCity = @strCity WHERE intAddressID = @intAddressID
 	END
 
 	-- Check State
 	IF @intStateID IS NOT NULL
 	BEGIN
-		UPDATE TOrders SET intStateID = @intStateID WHERE intOrderID = @intOrderID
+		UPDATE TAddresses SET intStateID = @intStateID WHERE intAddressID = @intAddressID
 	END
 
-	-- Check Status
-	IF @intStatusID IS NOT NULL
+	-- Check Zip
+	IF @strZipCode IS NOT NULL
 	BEGIN
-		UPDATE TOrders SET intStatusID = @intStatusID WHERE intOrderID = @intOrderID
+		UPDATE TAddresses SET strZipCode = @strZipCode WHERE intAddressID = @intAddressID
+	END
+
+	-- Check Zip
+	IF @intAddressTypeID IS NOT NULL
+	BEGIN
+		UPDATE TAddresses SET intAddressTypeID = @intAddressTypeID WHERE intAddressID = @intAddressID
 	END
 	
 	RETURN 0 -- Order Updated
@@ -985,29 +1076,47 @@ BEGIN
 	SET XACT_ABORT ON
 	
 		-- check if this record is already in the database
+		DECLARE @intOrderID  INT
+		SET @intOrderID = (SELECT intOrderID FROM TOrders WHERE intUserID = @intUserID and intStatusID = 1)
+
 		DECLARE @ProductID INT
-		SELECT @ProductID = intProductID FROM TCart WHERE @intUserID = intUserID
+		SELECT @ProductID = intProductID FROM TOrderProductList WHERE @intOrderID = intOrderID
+
+		IF (@intOrderID IS NULL)
+			BEGIN
+				DECLARE @TempDate DATETIME
+				SET @TempDate = GETDATE()
+
+				EXEC @intOrderID = uspAddOrder 
+				@intUserID = @intUserID,
+				@intTotal = 0,
+				@strAddress = 0,
+				@strCity = 0,
+				@intStateID = 1,
+				@intStatusID = 1,
+				@dtmDateOfOrder = @TempDate					
+			END
 
 		-- if it is already there, delete it
-		IF EXISTS (SELECT * FROM TCart WHERE intUserID = @intUserID AND intProductID = @intProductID)
+		IF EXISTS (SELECT * FROM TOrderProductList WHERE intOrderID = @intOrderID AND intProductID = @intProductID)
 			BEGIN
-				DELETE FROM TCart WHERE @intUserID = intUserID AND @intProductID = intProductID 
+				DELETE FROM TOrderProductList WHERE intOrderID = @intOrderID AND intProductID = @intProductID
 				SET @intResponse = -1 -- toggled off
 			END
 		-- otherwise, insert it
 		ELSE
 			BEGIN 
 			BEGIN TRANSACTION
-					INSERT INTO TCart(intUserID, intProductID)
-					VALUES (@intUserID, @intProductID)
+					INSERT INTO TOrderProductList(intOrderID, intProductID)
+					VALUES (@intOrderID, @intProductID)
 					SET @intResponse = 1 -- toggled on
 				COMMIT TRANSACTION
 			END
-
 	RETURN @intResponse
 END 
 GO
 
+-- Get Cart
 GO
 CREATE PROCEDURE uspGetCart
      @intUserID			INTEGER
@@ -1017,17 +1126,20 @@ BEGIN
     SET NOCOUNT ON
 
 	SET XACT_ABORT ON
-
+	
 	BEGIN TRANSACTION
 
-		SELECT * FROM TCart WHERE intUserID = @intUserID	
+		DECLARE @intOrderID INT 
+		SET @intOrderID = (SELECT intOrderID FROM TOrders where intUserID = @intUserID and intStatusID = 1)
+
+		IF @intOrderID > 0 
+			SELECT * FROM TOrderProductList WHERE @intOrderID = intOrderID
+		END
 
 	COMMIT TRANSACTION
-
-END 
 GO
 
-
+-- Is Watched
 GO
 CREATE PROCEDURE uspIsWatched
 	  @intUserID		INTEGER
@@ -1038,8 +1150,12 @@ BEGIN
     SET NOCOUNT ON
 
 	SET XACT_ABORT ON
-
-		IF EXISTS (SELECT * FROM TCart WHERE intUserID = @intUserID AND intProductID = @intProductID)
+		
+		DECLARE @intOrderID INT
+		SELECT @intOrderID = intOrderID FROM TOrders where intUserID = @intUserID and intStatusID = 1
+		
+		IF @intOrderID > 0
+			IF EXISTS (SELECT * FROM TOrderProductList WHERE intOrderID = @intOrderID AND intProductID = @intProductID )
 		BEGIN
 			SET @intIsWatched = 1 -- Product is being watched by the user
 		END
@@ -1056,12 +1172,14 @@ EXEC uspAddUser
 	@strLastName		= 'Momberg',
 	@strEmailAddress	= 'Todd0929971@gmail.com',
 	@strPassword		= '12345',
+	@strStreetAddress   = '',
 	@strCity			= '',
 	@dtmDateOfBirth     = '',
 	@intStateID         = 1,
 	@intGenderID        = 1,
 	@strZipCode		    = '45251',
-	@blnAdmin			= 1
+	@blnAdmin			= 1,
+	@blnEmailList		= 1
 
 EXEC uspAddUser
 	@strFirstName		= '1',
@@ -1069,14 +1187,19 @@ EXEC uspAddUser
 	@strEmailAddress	= '123',
 	@strPassword		= '321',
 	@strCity			= '',
-	@dtmDateOfBirth     = '',
+	@strStreetAddress   = '',
+	@dtmDateOfBirth     = '09/29/1997',
 	@intStateID         = 1,
 	@intGenderID        = 1,
 	@strZipCode		    = '',
-	@blnAdmin			= 0
+	@blnAdmin			= 0,
+	@blnEmailList		= 1
 
 SELECT * FROM TUsers
 SELECT * FROM TUserLogins
 SELECT * FROM TProducts
 SELECT * FROM TImages
-SELECT * FROM TCart
+SELECT * FROM TOrders
+SELECT * FROM TOrderProductList
+SELECT * FROM TAddresses
+

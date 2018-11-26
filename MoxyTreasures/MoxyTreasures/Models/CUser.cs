@@ -76,13 +76,17 @@ namespace MoxyTreasures.Models
         public int    UserID        { get; set; }
 
 		[DisplayName("First Name")]
-		public string FirstName     { get; set; }
+        [Required]
+        public string FirstName     { get; set; }
 
 		[DisplayName("Last Name")]
-		public string LastName      { get; set; }
+        [Required]
+        public string LastName      { get; set; }
 
 		[DisplayName("Email Address")]
+        [Required]
 		public string EmailAddress  { get; set; }
+        [Required]
         public string Password{ get; set; }
 		public ActionStatusTypes ActionStatus { get; set; }
 		public List<CProduct> ProductList = new List<CProduct>();
@@ -113,6 +117,9 @@ namespace MoxyTreasures.Models
         public DateTime? dtmDateOfBirth { get; set; }
 
         public bool blnAdmin { get; set; }
+
+        [DisplayName("Email Signup")]
+        public bool blnEmailList { get; set; }
         public List<SelectListItem> GenderList;
         public List<SelectListItem> StatesList;
 

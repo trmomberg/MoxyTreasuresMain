@@ -9,22 +9,22 @@
     @using (Html.BeginForm("MyProfile", "User", FormMethod.Post))
     {
         <div>
-            <div class="Section">
+            <div class="Section top">
                 <div>@Html.LabelFor(Model => Model.FirstName)</div>
                 <div>@Html.TextBoxFor(Model => Model.FirstName)</div>
             </div>
 
-            <div class="Section">
+            <div class="Section top">
                 <div>@Html.LabelFor(Model => Model.LastName)</div>
                 <div>@Html.TextBoxFor(Model => Model.LastName)</div>
             </div>
 
-            <div class="Section">
+            <div class="Section top">
                 <div>@Html.LabelFor(Model => Model.EmailAddress)</div>
                 <div>@Html.TextBoxFor(Model => Model.EmailAddress)</div>
             </div>
 
-            <div class="section">
+            <div class="section top">
                 <div>@Html.LabelFor(Model => Model.Password)</div>
                 <div>@Html.TextBoxFor(Model => Model.Password, new { type = "password" })</div>
             </div>

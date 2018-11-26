@@ -8,15 +8,16 @@
 <div class="middle">
     <h2>Sign Up</h2>
     <p>To sign up for Moxy Treasures, enter your information below to create a profile.</p>
+    <p><span style="color:red">*</span> = required field</p>
 
     <div class="Section">
         <div class="top">@Html.LabelFor(Model => Model.FirstName)</div>
-        <div>@Html.TextBoxFor(Model => Model.FirstName)</div>
+        <div>@Html.TextBoxFor(Model => Model.FirstName, new { @value = "fffff", @required = "required" })<span style="color:red">    *</span></div>
     </div>
 
     <div class="Section">
         <div class="top">@Html.LabelFor(Model => Model.LastName)</div>
-        <div>@Html.TextBoxFor(Model => Model.LastName)</div>
+        <div>@Html.TextBoxFor(Model => Model.LastName, new { @value = "fffff", @required = "required" })<span style="color:red">    *</span></div>
     </div>
 
     <div class="Section">
@@ -31,12 +32,17 @@
 
     <div class="Section">
         <div class="top">@Html.LabelFor(Model => Model.EmailAddress)</div>
-        <div>@Html.TextBoxFor(Model => Model.EmailAddress)</div>
+        <div>@Html.TextBoxFor(Model => Model.EmailAddress, new { @value = "fffff", @required = "required" })<span style="color:red">    *</span></div>
     </div>
 
     <div class="Section">
         <div class="top">@Html.LabelFor(Model => Model.Password)</div>
-        <div>@Html.TextBoxFor(Model => Model.Password)</div>
+        <div>@Html.TextBoxFor(Model => Model.Password, new { @value = "fffff", @required = "required" })<span style="color:red">    *</span></div>
+    </div>
+
+    <div class="Section">
+        <div class="top">@Html.LabelFor(Model => Model.strAddress)</div>
+        <div>@Html.TextBoxFor(Model => Model.strAddress)</div>
     </div>
 
     <div class="Section">
@@ -52,6 +58,11 @@
     <div class="Section">
         <div class="top">@Html.LabelFor(Model => Model.strZipCode)</div>
         <div>@Html.TextBoxFor(Model => Model.strZipCode)</div>
+    </div>
+
+    <div class="Section">
+        <div class="top">Would you like to recieve emails regarding events or deals?</div>
+        <div>@Html.CheckBoxFor(Model => Model.blnEmailList)</div>
     </div>
 
     @if (Model.ActionStatus != MoxyTreasures.Models.CUser.ActionStatusTypes.UserUpdated)
