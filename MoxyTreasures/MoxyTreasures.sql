@@ -144,13 +144,13 @@ CREATE TABLE TImages
 )
 
 CREATE TABLE TOrders
-(
-	intOrderID			INTEGER					NOT NULL
-   ,intUserID			INTEGER					NOT NULL
-   ,intTotal			INTEGER					NOT NULL
-   ,dtmDateOfOrder		DATETIME				NOT NULL
-   ,intShippingAddress	VARCHAR(50)				NOT NULL
-   ,intStatusID			INTEGER					NOT NULL
+( 
+	intOrderID			 INTEGER					NOT NULL
+   ,intUserID			 INTEGER					NOT NULL
+   ,intTotal			 INTEGER					NOT NULL
+   ,dtmDateOfOrder		 DATETIME					NOT NULL
+   ,intShippingAddressID VARCHAR(50)				NOT NULL
+   ,intStatusID			 INTEGER					NOT NULL
    ,CONSTRAINT TOrders_PK PRIMARY KEY (intOrderID)
 )
 
@@ -325,6 +325,9 @@ INSERT INTO TAddressTypes(intAddressTypeID, strAddressType)
 VALUES  (0, 'Unknown')
 	   ,(1, 'Billing')
 	   ,(2, 'Shipping')
+
+INSERT INTO TAddresses(intAddressID, intUserID, strStreetAddress, strCity, intStateID, strZipCode, intAddressTypeID, blnDefaultAddress)
+VALUES (0, 0, '', '', 1, '', 0, 0)
 
 
 -- --------------------------------------------------------------------------------
@@ -620,6 +623,24 @@ BEGIN
 END
 GO
 
+-- Delete Product
+GO
+CREATE PROCEDURE uspDeleteProduct
+	@intProductID	INT
+
+AS
+BEGIN
+    SET NOCOUNT ON
+
+	DELETE FROM TImages WHERE intProductID = @intProductID
+
+	DELETE FROM TOrderProductList WHERE intProductID = @intProductID
+
+	DELETE FROM TProducts WHERE intProductID = @intProductID
+
+END 
+GO
+
 -- --------------------------------------------------
 -- Category
 -- --------------------------------------------------
@@ -769,8 +790,8 @@ BEGIN
 		--default to 1 if table is empty
 		SELECT @intOrderID = COALESCE ( @intOrderID, 1 )
 		
-		INSERT INTO TOrders(intOrderID, intUserID, intTotal, intStatusID, dtmDateOfOrder)
-		VALUES (@intOrderID, @intUserID, @intTotal, @intStatusID, @dtmDateOfOrder)
+		INSERT INTO TOrders(intOrderID, intUserID, intTotal, intStatusID, dtmDateOfOrder, intShippingAddressID)
+		VALUES (@intOrderID, @intUserID, @intTotal, @intStatusID, @dtmDateOfOrder, 0)
 
 	COMMIT TRANSACTION
 

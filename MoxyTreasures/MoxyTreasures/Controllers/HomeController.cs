@@ -107,8 +107,9 @@ namespace MoxyTreasures.Controllers
 
                 return Json(Home.Products[intProductID - 1]);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                string a = ex.Message;
                 return null;
             }
         }
