@@ -50,7 +50,7 @@ namespace MoxyTreasures.Models
 
         #region Get Functions
         // Get Product List \
-        public List<CProduct> GetProducts(int intProductID = 0)
+        public List<CProduct> GetProducts(int intProductID = 0, int intCategoryID = -1)
         {
 
             SqlConnection Connection = new SqlConnection();
@@ -71,6 +71,10 @@ namespace MoxyTreasures.Models
                         SetParameter(ref da, "@intProductID", intProductID, SqlDbType.Int);
                     }
 
+                    if (intCategoryID > -1)
+                    {
+                        SetParameter(ref da, "@intCategoryID", intCategoryID, SqlDbType.Int);
+                    }
                     try
                     {
                         da.Fill(ds);
@@ -86,6 +90,7 @@ namespace MoxyTreasures.Models
                                 Product.Price			= Convert.ToDouble((dr["intPrice"]));
                                 Product.CategoryID			= Convert.ToInt32((dr["intCategoryID"]));
 								Product.PrimaryImage = GetPrimaryImage(Product.ProductID);                             
+                                Product.intStockAmount = Convert.ToInt32((dr["intStockAmount"]));
 
                                 ProductList.Add(Product);
                             }
@@ -479,38 +484,7 @@ namespace MoxyTreasures.Models
                     SetParameter(ref cm, "@strTitle",       Product.Title, SqlDbType.VarChar);
                     SetParameter(ref cm, "@strDescription", Product.Description, SqlDbType.VarChar);
                     SetParameter(ref cm, "@intPrice",       Product.Price, SqlDbType.Int);
-                    SetParameter(ref cm, "@intStatusID",    Product.StatusID, SqlDbType.Int);
-
-                    cm.ExecuteReader();
-                    CloseDBConnection(ref Connection);
-
-                    return 0; // Success
-                }
-                else
-                {
-                    return -1; // No database connection
-                }
-
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        // Update Product Buyer \
-        public int UpdateProductBuyer(int intProductID, int intBuyerID)
-        {
-            try
-            {
-                SqlConnection Connection = null;
-
-                if (OpenDBConnection(ref Connection) == 0)
-                {
-                    SqlCommand cm = new SqlCommand("uspEditProductBuyer");
-
-                    SetParameter(ref cm, "@intProductID", intProductID, SqlDbType.Int);
-                    SetParameter(ref cm, "@intBuyerID", intBuyerID, SqlDbType.Int);
+                    SetParameter(ref cm, "@intStockAmount", Product.intStockAmount, SqlDbType.Int);
 
                     cm.ExecuteReader();
                     CloseDBConnection(ref Connection);
@@ -586,20 +560,18 @@ namespace MoxyTreasures.Models
         }
 
         // Update Product image\
-        public int UpdateProductImage(int intProductID, string strFileName, string strFileExtension, int intFileSize, byte[] bytes)
+        public int UpdateProductImage(int intImageID, int intProductID, string strFileName, string strFileExtension, int intFileSize, byte[] bytes)
         {
             try
             {
                 SqlConnection Connection = null;
-                int intIsPrimary = 0;
+                int intIsPrimary = 1;
 
                 if (OpenDBConnection(ref Connection) == 0)
                 {
                     SqlCommand cm = new SqlCommand("uspEditImage", Connection);
 
-                    // If there is no primary image for the product, set this image to primary
-                    if (HasPrimaryImage(intProductID) == false) { intIsPrimary = 1; };
-
+                    SetParameter(ref cm, "@intImageID", intImageID, SqlDbType.Int);
                     SetParameter(ref cm, "@intProductID", intProductID, SqlDbType.Int);
                     SetParameter(ref cm, "@blnPrimaryImage", intIsPrimary, SqlDbType.Bit);
                     SetParameter(ref cm, "@strFileName", strFileName, SqlDbType.VarChar);
@@ -642,6 +614,7 @@ namespace MoxyTreasures.Models
                     SetParameter(ref Command, "@strTitle", Product.Title, SqlDbType.VarChar);
                     SetParameter(ref Command, "@strDescription", Product.Description, SqlDbType.VarChar);
                     SetParameter(ref Command, "@intPrice", Product.Price, SqlDbType.Int);
+                    SetParameter(ref Command, "@intStockAmount", Product.intStockAmount, SqlDbType.Int);
                     SetParameter(ref Command, "@intCategoryID", Product.CategoryID, SqlDbType.Int);
 
                     Command.ExecuteReader();

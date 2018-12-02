@@ -30,8 +30,22 @@ namespace MoxyTreasures.Controllers
 			User.Password = "12345";
 			return View(User);
         }
+       
+        public ActionResult Email()
+        {
+            Models.CUser User = new Models.CUser();
+            User = User.GetCurrentUser();
+            return View(User);
+        }
 
-		public ActionResult Cart()
+        public ActionResult Data()
+        {
+            Models.CUser User = new Models.CUser();
+            User = User.GetCurrentUser();
+            return View(User);
+        }
+
+        public ActionResult Cart()
 		{
 			Models.CUser User = new Models.CUser();
             Models.CProduct product = new Models.CProduct();
@@ -250,8 +264,8 @@ namespace MoxyTreasures.Controllers
                     Product.CategoryID = Convert.ToInt32(Collection["ProductList[0].CategoryList[0].intCategoryID"]);
 					Product.Description = (string)Collection["ProductList[0].Description"];
 					Product.StatusID = Models.StatusTypes.Active;
-
-					Product.Save();
+                    Product.intStockAmount = Convert.ToInt32(Collection["ProductList[0].intStockAmount"]);
+                    Product.Save();
 
 					if (PrimaryImage != null)
 					{
@@ -341,7 +355,7 @@ namespace MoxyTreasures.Controllers
 				if (User.UserID > 0)
 				{				
 					User.SetCurrentUser();
-					return RedirectToAction("Home", "Home");
+					return RedirectToAction("Main", "Home");
 				}
 				else
 				{

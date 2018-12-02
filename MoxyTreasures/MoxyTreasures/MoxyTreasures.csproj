@@ -217,6 +217,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\app-menu.css" />
+    <Content Include="Content\Images\All.jpg" />
+    <Content Include="Content\Images\earrings.jpg" />
+    <Content Include="Content\Images\bracelet.jpg" />
+    <Content Include="Content\Images\necklace.jpg" />
+    <Content Include="Content\Images\ring.jpg" />
+    <Content Include="Content\Images\shirt.jpg" />
     <Content Include="Content\Images\add-icon.png" />
     <Content Include="Content\Images\Yes_check.png" />
     <Content Include="Content\Site.css" />
@@ -262,6 +268,10 @@
     <Content Include="Views\Home\ProductDetails.cshtml" />
     <Content Include="Views\User\Cart.cshtml" />
     <Content Include="Views\User\Categories.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\User\Email.cshtml" />
+    <Content Include="Views\User\Data.cshtml" />
+    <Content Include="Views\Home\Main.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

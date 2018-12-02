@@ -30,7 +30,8 @@ namespace MoxyTreasures.Models
         [DisplayName("Category")]
         public int CategoryID    { get; set; }
         public double dblCartSubTotal { get; set; }
-
+        [DisplayName("Stock Amount")]
+        public int intStockAmount { get; set; }
         public List<SelectListItem> StatusTypesList;
         public ActionStatusTypes ActionStatus { get; set; }
         public List<CCategories> CategoryList = CCategories.GetCategories();
@@ -83,12 +84,8 @@ namespace MoxyTreasures.Models
                 else
                 {
                     Database.InsertProduct(this);
-                }
+                }  
 
-                if (this.PrimaryImage != null)
-                {
-                    this.UpdatePrimaryImage();
-                }
                 return 0; // Success
             }
             catch (Exception ex)
@@ -103,7 +100,12 @@ namespace MoxyTreasures.Models
             {
                 CDatabase Database = new CDatabase();
                 CImage NewImage = new CImage();
-                Database.UpdateProductImage(this.ProductID, this.PrimaryImage.FileName, this.PrimaryImage.FileExtension, this.PrimaryImage.FileSize, this.PrimaryImage.FileBytes);
+
+                int intImageID;
+                NewImage = Database.GetPrimaryImage(this.ProductID);
+                intImageID = NewImage.ImageID;
+
+                Database.UpdateProductImage(intImageID, this.ProductID, this.PrimaryImage.FileName, this.PrimaryImage.FileExtension, this.PrimaryImage.FileSize, this.PrimaryImage.FileBytes);
                 return 0;
             }
             catch (Exception ex)

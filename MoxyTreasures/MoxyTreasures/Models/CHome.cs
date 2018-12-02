@@ -9,7 +9,8 @@ namespace MoxyTreasures.Models
 	public class CHome
 	{
 		public CUser CurrentUser = new CUser();
-		public List<CProduct> Products = new List<CProduct>();      
+		public List<CProduct> Products = new List<CProduct>();
+        public string HeaderText { get; set; }
 
         public int ToggleCart(int intProductID, int intUserID)
         {

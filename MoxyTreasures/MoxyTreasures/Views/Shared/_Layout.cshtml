@@ -14,7 +14,8 @@
         <h1 id="layout-h1">Moxy Treasures</h1>
         <div>
             <div class="topnav" id="myTopnav" style="display:inline-block">
-                @Html.ActionLink("Home", "Home", "Home")
+                @Html.ActionLink("Home", "Main", "Home")
+                @Html.ActionLink("About", "About", "Home")
                 @if (Model.CurrentUser.UserID == 0)
                 {
                     @Html.ActionLink("Login", "LogIn", "User")
@@ -24,8 +25,8 @@
                 {
                     @Html.ActionLink("Manage Products", "MyProducts", "User")
                     @Html.ActionLink("Manage Categories", "Categories", "User")
-                    @Html.ActionLink("Email", "", "")
-                    @Html.ActionLink("Data", "", "")
+                    @Html.ActionLink("Email", "Email", "User")
+                    @Html.ActionLink("Data", "Data", "User")
                     @Html.ActionLink("Log Out", "SignOut", "User")
                 }
                 else

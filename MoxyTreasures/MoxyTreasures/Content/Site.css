@@ -9,6 +9,17 @@ h2 { margin-bottom: 1em;}
 div, input[type=text], textarea, select, input[type=password] {
     box-sizing : border-box; 
 }
+.category {
+    border: 0.5px solid lightgray;
+    border-radius: 0.3em;
+    -webkit-border-radius: 0.3em;
+    -moz-border-radius: 0.3em;
+    padding: 0px;
+    margin-right: 1em;
+    margin-bottom: 1em;
+    display: inline-block;
+    width: 12.1em;
+}
 .product-small {
     border: 1px solid lightgray;
 	border-radius: 0.3em;
@@ -28,13 +39,14 @@ div, input[type=text], textarea, select, input[type=password] {
 }
 .product-large {
     border: 1px solid gray;
-	border-radius: 0.3em;
-    max-height:20em;
-	-webkit-border-radius: 0.3em;
-	-moz-border-radius: 0.3em;
-    padding: 0.4em; 
-    margin-right: 1em; 
-    margin-bottom: 1em; 
+    border-radius: 0.3em;
+    max-height: 20em;
+    max-width: 20em;
+    -webkit-border-radius: 0.3em;
+    -moz-border-radius: 0.3em;
+    padding: 0.4em;
+    margin-right: 1em;
+    margin-bottom: 1em;
     display: inline-block;
 }
 .cut-text { 
@@ -45,6 +57,7 @@ div, input[type=text], textarea, select, input[type=password] {
 }
 .thumbnail {
     width: 12em;
+    height: 12em;
 }
 .thumbnail2 {
     width: 25em;
@@ -52,7 +65,7 @@ div, input[type=text], textarea, select, input[type=password] {
 .icon{
     width: 2em;
 }
-.center { text-align: center;}
+.center { text-align: center; margin-bottom:2px;}
 #home-header {
     margin-left: 0;
     margin-right: 0;
@@ -96,9 +109,10 @@ div, input[type=text], textarea, select, input[type=password] {
 .wider-items {width: 100%; max-width: 20em;}
 #primary-image {
     display: inline;
-    float: left;
+    float: right;
 }
 #product-edit {
+    min-width: 25em;
     margin-right: 1.5em;
     display: inline;
     float: left;
@@ -134,3 +148,9 @@ div, input[type=text], textarea, select, input[type=password] {
     border:none;
     border: 1px solid white;
 }
+a { text-decoration: none } /* Globally */
+
+/* Each state */
+
+a:visited { text-decoration: none}
+a:focus { text-decoration: none }

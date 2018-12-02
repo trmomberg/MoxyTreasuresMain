@@ -118,6 +118,7 @@ CREATE TABLE TProducts
 (
 	 intProductID		INTEGER					NOT NULL
 	,intCategoryID		INTEGER					NOT NULL
+	,intStockAmount		INTEGER					NOT NULL
 	,strTitle			VARCHAR(50)				NOT NULL
 	,strDescription		VARCHAR(250)			NOT NULL
 	,intPrice			INTEGER					NOT NULL
@@ -530,19 +531,26 @@ GO
 -- Products
 -- --------------------------------------------------
 
--- Select Product
+-- Select Products
 GO
 CREATE PROCEDURE uspSelectProduct
-	 @intProductID  INT = NULL
-
+	 @intProductID  INT = NULL,
+	 @intCategoryID	INT = -1
 AS
 BEGIN
     SET NOCOUNT ON
 
 	IF @intProductID IS NOT NULL
-		SELECT * FROM TProducts WHERE intProductID = @intProductID
+		IF @intCategoryID > -1
+			SELECT * FROM TProducts WHERE intProductID = @intProductID AND intCategoryID = @intCategoryID
+		ELSE
+			SELECT * FROM TProducts WHERE intProductID = @intProductID
 	ELSE
-		SELECT * FROM TProducts
+		IF @intCategoryID > -1
+			SELECT * FROM TProducts WHERE intCategoryID = @intCategoryID
+		ELSE
+			SELECT * FROM TProducts
+		
 	
 END 
 GO
@@ -552,6 +560,7 @@ GO
 CREATE PROCEDURE uspAddProduct
      @intProductID			INT=0 OUTPUT
 	,@intCategoryID			INT
+	,@intStockAmount		INT
 	,@strTitle				VARCHAR(50)
 	,@strDescription		VARCHAR(50)
 	,@intPrice				INT		
@@ -570,8 +579,8 @@ BEGIN
 		--default to 1 if table is empty
 		SELECT @intProductID = COALESCE ( @intProductID, 1 )
 		
-		INSERT INTO TProducts (intProductID, intCategoryID, strTitle, strDescription, intPrice)
-		VALUES (@intProductID, @intCategoryID, @strTitle, @strDescription, @intPrice)
+		INSERT INTO TProducts (intProductID, intCategoryID, strTitle, strDescription, intPrice, intStockAmount)
+		VALUES (@intProductID, @intCategoryID, @strTitle, @strDescription, @intPrice, @intStockAmount)
 
 	COMMIT TRANSACTION
 
@@ -589,6 +598,7 @@ CREATE PROCEDURE uspEditProduct
 	,@strTitle				VARCHAR(50) = NULL
 	,@strDescription		VARCHAR(50) = NULL
 	,@intPrice				INT = NULL
+	,@intStockAmount		INT = NULL
 
 	
 AS
@@ -617,6 +627,12 @@ BEGIN
 	IF @intPrice IS NOT NULL
 	BEGIN
 		UPDATE TProducts SET intPrice = @intPrice WHERE intProductID = @intProductID
+	END
+
+	-- Check Stock Amount
+	IF @intStockAmount IS NOT NULL
+	BEGIN
+		UPDATE TProducts SET intStockAmount = @intStockAmount WHERE intProductID = @intProductID
 	END
 	
 	RETURN 0 -- Product Updated
@@ -992,7 +1008,7 @@ CREATE PROCEDURE uspEditImage
 	,@strFileName		VARCHAR(255) = NULL
 	,@strImageType		VARCHAR(255) = NULL
 	,@intImageSize		INT = NULL
-	,@ImageData			VARBINARY = NULL
+	,@ImageData			VARBINARY(max)
 AS
 BEGIN
     SET NOCOUNT ON

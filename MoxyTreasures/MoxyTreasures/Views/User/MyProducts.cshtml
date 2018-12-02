@@ -25,7 +25,17 @@
                 }
                 <div class="center cut-text">@p.Title</div>
                 <div class="center">@p.Price.ToString("$#,###.00")</div>
-                <div class="center">@Html.ActionLink("Edit", "MyProduct", "User", new { id = p.ProductID })</div>
+                <div class="center">
+                    @if (p.intStockAmount == 0)
+                    {
+                        <span style="color:red">Out of stock&nbsp;</span>
+                    }
+                    else
+                    {
+                        <span>@p.intStockAmount</span><span> in stock&nbsp;</span>
+                    }
+                    <a href="@Url.Action("MyProduct", "User", new { id = p.ProductID })">Edit</a>
+                </div>
             </div>
         }
     }

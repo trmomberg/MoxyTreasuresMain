@@ -11,17 +11,51 @@ namespace MoxyTreasures.Controllers
         // GET: Home
         public ActionResult Home()
         {
-			Models.CHome h = new Models.CHome();
+
+            int intCategoryID = Convert.ToInt32(RouteData.Values["id"]);
+            Models.CHome h = new Models.CHome();
             Models.CDatabase db = new Models.CDatabase();
-			if (h.CurrentUser.GetCurrentUser() != null)
-			{
-				h.CurrentUser = h.CurrentUser.GetCurrentUser();
-			}
-			else
-			{
-				h.CurrentUser.UserID = 0;
-			}
-			h.Products = Models.CProduct.GetProducts();
+            if (h.CurrentUser.GetCurrentUser() != null)
+            {
+                h.CurrentUser = h.CurrentUser.GetCurrentUser();
+            }
+            else
+            {
+                h.CurrentUser.UserID = 0;
+            }
+                       
+            switch (intCategoryID)
+            {
+                case 0:
+                    // All Products
+                    h.Products = Models.CProduct.GetProducts();
+                    h.HeaderText = "All";
+                    break;
+                case 1:
+                    h.Products = db.GetProducts(0, 1);
+                    h.HeaderText = "Rings";
+                    break;
+                case 2:
+                    h.Products = db.GetProducts(0, 2);
+                    h.HeaderText = "Necklaces";
+                    break;
+                case 3:
+                    h.Products = db.GetProducts(0, 3);
+                    h.HeaderText = "Earrings";
+                    break;
+                case 4:
+                    h.Products = db.GetProducts(0, 4);
+                    h.HeaderText = "Bracelets";
+                    break;
+                case 5:
+                    h.Products = db.GetProducts(0, 5);
+                    h.HeaderText = "Clothing";
+                    break;
+                default:
+                    // All Products
+                    h.Products = Models.CProduct.GetProducts();
+                    break;
+            }
 
             if (h.Products != null)
             {
@@ -35,6 +69,40 @@ namespace MoxyTreasures.Controllers
             }
             return View(h);
 		}
+
+        // GET: About
+        public ActionResult About()
+        {
+            Models.CHome h = new Models.CHome();
+            Models.CDatabase db = new Models.CDatabase();
+            if (h.CurrentUser.GetCurrentUser() != null)
+            {
+                h.CurrentUser = h.CurrentUser.GetCurrentUser();
+            }
+            else
+            {
+                h.CurrentUser.UserID = 0;
+            }
+
+            return View(h);
+        }
+
+        // GET: Main
+        public ActionResult Main()
+        {
+            Models.CHome h = new Models.CHome();
+            Models.CDatabase db = new Models.CDatabase();
+            if (h.CurrentUser.GetCurrentUser() != null)
+            {
+                h.CurrentUser = h.CurrentUser.GetCurrentUser();
+            }
+            else
+            {
+                h.CurrentUser.UserID = 0;
+            }
+
+            return View(h);
+        }
 
         //[HttpPost]
         //public ActionResult Home()
@@ -79,6 +147,7 @@ namespace MoxyTreasures.Controllers
         {
             try
             {
+                              
                 Models.CHome Home = new Models.CHome();
                 Models.CDatabase db = new Models.CDatabase();
 
