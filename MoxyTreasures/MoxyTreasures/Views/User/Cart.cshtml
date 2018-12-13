@@ -25,10 +25,11 @@
         {
             <div class="Section">
                 <div class="top">@Html.LabelFor(Model => Model.CartSubTotal)</div>
-                <div>@Html.TextBoxFor(Model => Model.CartSubTotal, new { @readonly = true, @class = "TextBoxAsLabel" })</div>
+                <div>@Html.TextBoxFor(Model => Model.CartSubTotal, "{0:c}", new { @readonly = true, @class = "TextBoxAsLabel" })</div>
             </div>
 
-            <button style="margin-top:1em">Checkout</button>
+            <input type="button" value="Continue" onclick="@("window.location.href='" + @Url.Action("Addresses", "User") + "'");" />
+
         }
         else
         {

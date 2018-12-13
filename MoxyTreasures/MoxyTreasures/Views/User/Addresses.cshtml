@@ -1,0 +1,37 @@
+﻿@model MoxyTreasures.Models.CUser
+@{
+    ViewBag.Title = "Addresses";
+    Layout = "~/Views/Shared/_LayoutUser.cshtml";
+}
+<div class="middle">
+    <h2>Shipping Address</h2>
+    <p><span style="color:red">*</span> = required field</p>
+    @using (Html.BeginForm("Addresses", "User", FormMethod.Post))
+    {
+        <div id="DefaultAddress">
+            <div class="Section">
+                <div class="top">@Html.LabelFor(Model => Model.strAddress)</div>
+                <div>@Html.TextBoxFor(Model => Model.strAddress, new { @value = "fffff", @required = "required" })<span style="color:red">    *</span></div>
+            </div>
+
+            <div class="Section">
+                <div class="top">@Html.LabelFor(Model => Model.strCity)</div>
+                <div>@Html.TextBoxFor(Model => Model.strCity, new { @value = "fffff", @required = "required" })<span style="color:red">    *</span></div>
+            </div>
+
+            <div class="Section">
+                <div class="top">@Html.LabelFor(Model => Model.intStateID)</div>
+                <div>@Html.DropDownListFor(Model => Model.intStateID, new SelectList(Model.StatesList, "Value", "Text", Model.StatesList))<span style="color:red">    *</span></div>
+            </div>
+
+            <div class="Section">
+                <div class="top">@Html.LabelFor(Model => Model.strZipCode)</div>
+                <div>@Html.TextBoxFor(Model => Model.strZipCode, new { @value = "fffff", @required = "required" })<span style="color:red">    *</span></div>
+            </div>
+        </div>
+
+        <div style="margin-top: 2em">
+            <button>Continue</button>
+        </div>
+    }
+</div>

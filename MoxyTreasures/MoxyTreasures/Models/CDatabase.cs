@@ -156,8 +156,113 @@ namespace MoxyTreasures.Models
 			}
 		}
 
-		// Get User \/
-		public CUser GetUser(int intUserID)
+        // Get Address List \
+        public CAddress GetDefaultAddress(int intUserID)
+        {
+
+            SqlConnection Connection = new SqlConnection();
+            List<CAddress> AddressList = new List<CAddress>();
+
+            try
+            {
+
+                if (OpenDBConnection(ref Connection) == 0)
+                {
+                    SqlDataAdapter da = new SqlDataAdapter("uspSelectAddresses", Connection);
+                    SetParameter(ref da, "@intUserID", intUserID, SqlDbType.Int);
+                    da.SelectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                    DataSet ds = new DataSet();
+
+                    try
+                    {
+                        da.Fill(ds);
+
+                        foreach (DataTable dt in ds.Tables)
+                        {
+                            foreach (DataRow dr in dt.Rows)
+                            {
+                                CAddress Address = new CAddress();
+                                Address.intAddressID = Convert.ToInt32((dr["intAddressID"]));
+                                Address.strAddress = (dr["strStreetAddress"]).ToString();
+                                Address.intStateID = Convert.ToInt32((dr["intStateID"]));
+                                Address.strCity = (dr["strCity"]).ToString();
+                                Address.strZipCode = (dr["strZipCode"]).ToString();
+
+                                AddressList.Add(Address);
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        CloseDBConnection(ref Connection);
+                    }
+                }
+                return AddressList[0];
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        // Get Address List \
+        public List<CAddress> GetAddressList(int intUserID = 0)
+        {
+
+            SqlConnection Connection = new SqlConnection();
+            List<CAddress> AddressList = new List<CAddress>();
+
+            try
+            {
+
+                if (OpenDBConnection(ref Connection) == 0)
+                {
+                    SqlDataAdapter da = new SqlDataAdapter("uspSelectAddresses", Connection);
+                    if (intUserID > 0)
+                    {
+                        SetParameter(ref da, "@intUserID", intUserID, SqlDbType.Int);
+                    }
+                    else
+                    {
+                        SetParameter(ref da, "@intUserID", null, SqlDbType.Int);
+                    }
+                    da.SelectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                    DataSet ds = new DataSet();
+
+                    try
+                    {
+                        da.Fill(ds);
+
+                        foreach (DataTable dt in ds.Tables)
+                        {
+                            foreach (DataRow dr in dt.Rows)
+                            {
+                                CAddress Address = new CAddress();
+                                Address.intAddressID = Convert.ToInt32((dr["intAddressID"]));
+                                Address.strAddress = (dr["strStreetAddress"]).ToString();
+                                Address.intStateID = Convert.ToInt32((dr["intStateID"]));
+                                Address.strCity = (dr["strCity"]).ToString();
+                                Address.strZipCode = (dr["strZipCode"]).ToString();
+
+                                AddressList.Add(Address);
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        CloseDBConnection(ref Connection);
+                    }
+                }
+                return AddressList;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        // Get User \/
+        public CUser GetUser(int intUserID)
         {
             
 			SqlConnection Connection = new SqlConnection();
@@ -268,6 +373,67 @@ namespace MoxyTreasures.Models
                 }
                 // return CategoryList;
                 return CategoryList;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        // Get Order \/
+        public COrder GetOrder(int intOrderID = 0, int intUserID = 0, int blncart = 0)
+        {
+
+            SqlConnection Connection = new SqlConnection();
+           COrder Order = new COrder();
+
+            try
+            {
+
+                if (OpenDBConnection(ref Connection) == 0)
+                {
+                    SqlDataAdapter da = new SqlDataAdapter("uspSelectOrder", Connection);
+                    da.SelectCommand.CommandType = System.Data.CommandType.StoredProcedure;
+                    DataSet ds = new DataSet();
+
+                    if (intUserID != 0)
+                    {
+                        SetParameter(ref da, "@intUserID", intUserID, SqlDbType.Int);
+                    }
+
+                    if (intOrderID != 0)
+                    {
+                        SetParameter(ref da, "@intOrderID", intOrderID, SqlDbType.Int);
+                    }
+
+                    if (blncart != 0)
+                    {
+                        SetParameter(ref da, "@blnCart", blncart, SqlDbType.Bit);
+                    }
+
+                    try
+                    {
+                        da.Fill(ds);
+
+                        foreach (DataTable dt in ds.Tables)
+                        {
+                            foreach (DataRow dr in dt.Rows)
+                            {
+                                Order.intOrderID = Convert.ToInt32((dr["intOrderID"]));
+                                Order.intUserID = Convert.ToInt32((dr["intUserID"]));
+                                Order.intTotal = Convert.ToInt32((dr["intTotal"]));
+                                Order.intShippingAddressID = Convert.ToInt32((dr["intShippingAddressID"]));
+                                Order.intStatusID = Convert.ToInt32((dr["intStatusID"]));
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        CloseDBConnection(ref Connection);
+                    }
+                }
+                // return Order;
+                return Order;
             }
             catch (Exception ex)
             {
@@ -464,6 +630,44 @@ namespace MoxyTreasures.Models
             }
         }
 
+        // Delete Address \
+        public bool DeleteAddress(int intAddressID = 0, int intUserID = 0)
+        {
+            try
+            {
+
+                SqlConnection Connection = new SqlConnection();
+                if (OpenDBConnection(ref Connection) == 0)
+                {
+                    SqlCommand cm = new SqlCommand("uspDeleteAddress", Connection);
+
+                    if (intAddressID > 0)
+                    {
+                        SetParameter(ref cm, "@intAddressID", intAddressID, SqlDbType.Int);
+                    }
+
+                    if (intUserID > 0)
+                    {
+                        SetParameter(ref cm, "@intUserID", intUserID, SqlDbType.Int);
+                    }
+                    cm.ExecuteNonQuery();
+
+                    CloseDBConnection(ref Connection);
+
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         #endregion
 
         #region Update Functions
@@ -485,6 +689,40 @@ namespace MoxyTreasures.Models
                     SetParameter(ref cm, "@strDescription", Product.Description, SqlDbType.VarChar);
                     SetParameter(ref cm, "@intPrice",       Product.Price, SqlDbType.Int);
                     SetParameter(ref cm, "@intStockAmount", Product.intStockAmount, SqlDbType.Int);
+
+                    cm.ExecuteReader();
+                    CloseDBConnection(ref Connection);
+
+                    return 0; // Success
+                }
+                else
+                {
+                    return -1; // No database connection
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        // Update Product \
+        public int UpdateOrder(COrder Order)
+        {
+            try
+            {
+                SqlConnection Connection = null;
+
+                if (OpenDBConnection(ref Connection) == 0)
+                {
+                    SqlCommand cm = new SqlCommand("uspEditOrder", Connection);
+
+                    SetParameter(ref cm, "@intOrderID", Order.intOrderID, SqlDbType.Int);
+                    SetParameter(ref cm, "@intTotal", Order.intTotal, SqlDbType.Int);
+                    //SetParameter(ref cm, "@dmtDateOfOrder", Order.dtmDateOfOrder, SqlDbType.DateTime);
+                    SetParameter(ref cm, "@intAddressID", Order.intShippingAddressID, SqlDbType.Int);
+                    SetParameter(ref cm, "@intStatusID", Order.intStatusID, SqlDbType.Int);
 
                     cm.ExecuteReader();
                     CloseDBConnection(ref Connection);
@@ -759,6 +997,52 @@ namespace MoxyTreasures.Models
                     {
                         intReturnID = (int)cm.Parameters["ReturnValue"].Value;
                         
+                    }
+
+                    return intReturnID; //success
+                }
+                else
+                {
+                    return -1; // No database connection
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        // Insert Address \
+        public int InsertAddress(CAddress Address)
+        {
+            try
+            {
+                SqlConnection Connection = null;
+
+                if (OpenDBConnection(ref Connection) == 0)
+                {
+                    int intReturnID = 0;
+                    CUser User = new CUser();
+                    User = User.GetCurrentUser();
+
+                    SqlCommand cm = new SqlCommand("uspAddAddress", Connection);
+
+                    SetParameter(ref cm, "@intUserID", User.UserID, SqlDbType.Int);
+                    SetParameter(ref cm, "@strStreetAddress", Address.strAddress, SqlDbType.VarChar);
+                    SetParameter(ref cm, "@strCity", Address.strCity, SqlDbType.VarChar);
+                    SetParameter(ref cm, "@intStateID", Address.intStateID, SqlDbType.Int);
+                    SetParameter(ref cm, "@strZipCode", Address.strZipCode, SqlDbType.VarChar);
+                    SetParameter(ref cm, "ReturnValue", 0, SqlDbType.Int, Direction: ParameterDirection.ReturnValue);
+
+                    cm.ExecuteReader();
+
+                    CloseDBConnection(ref Connection);
+
+                    if (!Convert.IsDBNull(cm.Parameters["ReturnValue"].Value))
+                    {
+                        intReturnID = (int)cm.Parameters["ReturnValue"].Value;
+
                     }
 
                     return intReturnID; //success

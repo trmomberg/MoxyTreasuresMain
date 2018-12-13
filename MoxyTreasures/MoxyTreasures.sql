@@ -38,11 +38,16 @@ IF OBJECT_ID( 'uspAddCategory' )				IS NOT NULL		DROP PROCEDURE uspAddCategory
 IF OBJECT_ID( 'uspEditCategory' )				IS NOT NULL		DROP PROCEDURE uspEditCategory
 IF OBJECT_ID( 'uspDeleteCategory' )				IS NOT NULL		DROP PROCEDURE uspDeleteCategory
 
+
 -- Addresses
+IF OBJECT_ID( 'uspSelectDefaultAddress' )		IS NOT NULL		DROP PROCEDURE uspSelectDefaultAddress
+IF OBJECT_ID( 'uspSelectAddresses' )			IS NOT NULL		DROP PROCEDURE uspSelectAddresses
 IF OBJECT_ID( 'uspAddAddress' )					IS NOT NULL		DROP PROCEDURE uspAddAddress
 IF OBJECT_ID( 'uspEditAddress' )				IS NOT NULL		DROP PROCEDURE uspEditAddress
+IF OBJECT_ID( 'uspDeleteAddress' )				IS NOT NULL		DROP PROCEDURE uspDeleteAddress
 
 -- Products
+IF OBJECT_ID( 'uspSearch' )						IS NOT NULL		DROP PROCEDURE uspSearch
 IF OBJECT_ID( 'uspSelectProduct' )				IS NOT NULL		DROP PROCEDURE uspSelectProduct
 IF OBJECT_ID( 'uspSelectProductState' )			IS NOT NULL		DROP PROCEDURE uspSelectProductState
 IF OBJECT_ID( 'uspAddProduct' )					IS NOT NULL		DROP PROCEDURE uspAddProduct
@@ -93,7 +98,6 @@ CREATE TABLE TAddresses
 	,strCity			VARCHAR(50)				NOT NULL
 	,intStateID			INTEGER					NOT NULL  
 	,strZipCode			VARCHAR(50)				NOT NULL
-	,blnDefaultAddress	BIT						NOT NULL
 	,intAddressTypeID	INTEGER					NOT NULL
 	,CONSTRAINT TAddresses_PK PRIMARY KEY ( intAddressID )
 )
@@ -327,8 +331,8 @@ VALUES  (0, 'Unknown')
 	   ,(1, 'Billing')
 	   ,(2, 'Shipping')
 
-INSERT INTO TAddresses(intAddressID, intUserID, strStreetAddress, strCity, intStateID, strZipCode, intAddressTypeID, blnDefaultAddress)
-VALUES (0, 0, '', '', 1, '', 0, 0)
+INSERT INTO TAddresses(intAddressID, intUserID, strStreetAddress, strCity, intStateID, strZipCode, intAddressTypeID)
+VALUES (0, 0, '', '', 1, '', 0)
 
 
 -- --------------------------------------------------------------------------------
@@ -408,8 +412,8 @@ BEGIN
 				SELECT @intAddressID = COALESCE ( @intAddressID, 1 )
 
 				-- Insert Address Values
-				INSERT INTO TAddresses (intAddressID, intUserID, strStreetAddress, strCity, intStateID, strZipCode, blnDefaultAddress, intAddressTypeID)
-				VALUES (@intAddressID, @intUserID, @strStreetAddress, @strCity, @intStateID, @strZipCode, 1, 0)
+				INSERT INTO TAddresses (intAddressID, intUserID, strStreetAddress, strCity, intStateID, strZipCode, intAddressTypeID)
+				VALUES (@intAddressID, @intUserID, @strStreetAddress, @strCity, @intStateID, @strZipCode, 0)
 
 				DECLARE @salt UNIQUEIDENTIFIER=NEWID()
 		
@@ -530,6 +534,22 @@ GO
 -- --------------------------------------------------
 -- Products
 -- --------------------------------------------------
+
+-- Search
+GO
+CREATE PROCEDURE uspSearch
+	 @strSearch	VARCHAR(50)
+	 
+AS
+BEGIN
+    SET NOCOUNT ON
+
+	IF @strSearch IS NOT NULL
+		SELECT * FROM TProducts WHERE strTitle LIKE '%' + @strSearch + '%'
+		
+	
+END 
+GO
 
 -- Select Products
 GO
@@ -741,6 +761,7 @@ BEGIN
 
 END 
 GO
+
 -- --------------------------------------------------
 -- Orders
 -- --------------------------------------------------
@@ -749,18 +770,25 @@ GO
 GO
 CREATE PROCEDURE uspSelectOrder
 	  @intOrderID  INT = NULL
-	 ,@intUserID  INT = NULL
-
+	 ,@intUserID   INT = NULL
+	 ,@blnCart	   BIT = NULL
 AS
 BEGIN
     SET NOCOUNT ON
-
-	IF @intOrderID IS NOT NULL
-		SELECT * FROM TOrders WHERE intOrderID = @intOrderID
-	ELSE IF @intUserID IS NOT NULL
-		SELECT * FROM TOrders WHERE intUserID = @intUserID
+	If @blnCart = 0
+		IF @intOrderID IS NOT NULL
+			SELECT * FROM TOrders WHERE intOrderID = @intOrderID
+		ELSE IF @intUserID IS NOT NULL
+			SELECT * FROM TOrders WHERE intUserID = @intUserID
+		ELSE
+			SELECT * FROM TOrders
 	ELSE
-		SELECT * FROM TOrders
+		IF @intOrderID IS NOT NULL
+				SELECT * FROM TOrders WHERE intOrderID = @intOrderID AND intStatusID = 1
+			ELSE IF @intUserID IS NOT NULL
+				SELECT * FROM TOrders WHERE intUserID = @intUserID AND intStatusID = 1
+			ELSE
+				SELECT * FROM TOrders
 END 
 GO
 
@@ -822,8 +850,8 @@ GO
 CREATE PROCEDURE uspEditOrder
 	 @intOrderID		    INT	= NULL
 	,@intTotal				INT	= NULL
-	,@intStateID			INT	= NULL
-	,@intStatusID			INT
+	,@intAddressID			INT = NULL
+	,@intStatusID			INT = NULL
 	
 AS
 BEGIN
@@ -833,6 +861,12 @@ BEGIN
 	IF @intTotal IS NOT NULL
 	BEGIN
 		UPDATE TOrders SET intTotal = @intTotal WHERE intOrderID = @intOrderID
+	END
+
+	-- Check AddressID
+	IF @intAddressID IS NOT NULL
+	BEGIN
+		UPDATE TOrders SET intShippingAddressID = @intAddressID WHERE intOrderID = @intOrderID
 	END
 
 	-- Check Status
@@ -849,10 +883,40 @@ GO
 -- Addresses
 -- --------------------------------------------------
 
+-- Select Default Address 
+GO
+CREATE PROCEDURE uspSelectDefaultAddress
+	 @intUserID  INT = NULL
+
+AS
+BEGIN
+    SET NOCOUNT ON
+
+	IF @intUserID IS NOT NULL
+		SELECT * FROM TAddresses WHERE intUserID = @intUserID
+END 
+GO
+
+-- Select Addresses 
+GO
+CREATE PROCEDURE uspSelectAddresses
+	 @intUserID  INT = NULL
+
+AS
+BEGIN
+    SET NOCOUNT ON
+
+	IF @intUserID IS NOT NULL
+		SELECT * FROM TAddresses WHERE intUserID = @intUserID
+	ELSE
+		SELECT * FROM TAddresses
+END 
+GO
+
 -- Add Address
 GO 
 CREATE PROCEDURE uspAddAddress
-	 @intAddressID		INT 
+	 @intAddressID		INT = 0
 	,@intUserID			INT
 	,@strStreetAddress	VARCHAR(50)
 	,@strCity			VARCHAR(50)
@@ -874,7 +938,7 @@ BEGIN
 		SELECT @intAddressID = COALESCE ( @intAddressID, 1 )
 		
 		INSERT INTO TAddresses(intAddressID, intUserID, strStreetAddress, strCity, intStateID, strZipCode, intAddressTypeID)
-		VALUES (@intAddressID, @intUserID, @strStreetAddress, @strCity, @intStateID, @strZipCode, @intAddressID)
+		VALUES (@intAddressID, @intUserID, @strStreetAddress, @strCity, @intStateID, @strZipCode, @intAddressTypeID)
 
 	COMMIT TRANSACTION
 
@@ -932,6 +996,22 @@ BEGIN
 END
 GO
 
+-- Delete Address
+GO
+CREATE PROCEDURE uspDeleteAddress
+	 @intAddressID		INT = NULL
+	,@intUserID			INT = NULL
+
+AS
+BEGIN
+
+	IF @intAddressID IS NOT NULL
+		DELETE FROM TAddresses WHERE intAddressID = @intAddressID
+	ELSE IF @intUserID IS NOT NULL
+		DELETE FROM TAddresses WHERE intUserID = @intUserID
+
+END 
+GO
 -- --------------------------------------------------
 -- Images
 -- --------------------------------------------------
@@ -1239,4 +1319,3 @@ SELECT * FROM TImages
 SELECT * FROM TOrders
 SELECT * FROM TOrderProductList
 SELECT * FROM TAddresses
-

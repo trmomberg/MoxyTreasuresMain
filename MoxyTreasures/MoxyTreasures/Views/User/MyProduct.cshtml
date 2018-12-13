@@ -32,7 +32,7 @@
                 <div class="section">
                     <div class="item">
                         <div>@Html.LabelFor(Model => Model.ProductList[0].Price)</div>
-                        <div>@Html.TextBoxFor(Model => Model.ProductList[0].Price, new { style = "width: 6em;" })</div>
+                        <div>@Html.TextBoxFor(Model => Model.ProductList[0].Price, "{0:c}", new { style = "width: 6em;" })</div>
                     </div>
                     <div class="item">
                         <div>@Html.LabelFor(Model => Model.ProductList[0].CategoryID)</div>

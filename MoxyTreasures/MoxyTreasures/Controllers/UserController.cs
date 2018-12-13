@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.IO;
+using PayPal.Api;
 
 namespace MoxyTreasures.Controllers
 {
@@ -32,6 +33,13 @@ namespace MoxyTreasures.Controllers
         }
        
         public ActionResult Email()
+        {
+            Models.CUser User = new Models.CUser();
+            User = User.GetCurrentUser();
+            return View(User);
+        }
+
+        public ActionResult Payment()
         {
             Models.CUser User = new Models.CUser();
             User = User.GetCurrentUser();
@@ -423,5 +431,228 @@ namespace MoxyTreasures.Controllers
 				throw new Exception(ex.Message);
 			}			
 		}
-	}
+
+        public ActionResult Addresses()
+        {
+            try
+            {
+                Models.CUser User = new Models.CUser();
+                Models.CAddress DefaultAddress = new Models.CAddress();
+                List<Models.CAddress> AddressList = new List<Models.CAddress>();
+                User = User.GetCurrentUser();
+
+                DefaultAddress = Models.CAddress.GetDefaultAddress(User.UserID);
+                User.intStateID = DefaultAddress.intStateID;
+                User.strCity = DefaultAddress.strCity;
+                User.strAddress = DefaultAddress.strAddress;
+                User.strZipCode = DefaultAddress.strZipCode;
+
+                AddressList = Models.CAddress.GetAddressList(User.UserID);
+
+                if (AddressList.Count > 1)
+                {
+                    User.AddressList = AddressList;
+                }
+
+                return View(User);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult Addresses(FormCollection Collection)
+        {
+            try
+            {
+                Models.CUser User = new Models.CUser();
+                Models.CDatabase db = new Models.CDatabase();
+                Models.CAddress EnteredAddress = new Models.CAddress();
+                Models.COrder order = new Models.COrder();
+                Models.CUser user = new Models.CUser();
+                int intAddressID;
+
+                EnteredAddress.strAddress = Collection["strAddress"];
+                EnteredAddress.strCity = Collection["strCity"];
+                EnteredAddress.intStateID = Convert.ToInt32(Collection["intStateID"]);
+                EnteredAddress.strZipCode = Collection["strZipCode"];
+
+                intAddressID = EnteredAddress.DoesAddressExist(EnteredAddress);
+
+                user = user.GetCurrentUser();
+                order = Models.COrder.GetOrder(0, user.UserID, 1);
+
+                if (intAddressID > 0)
+                {
+                    order.intShippingAddressID = intAddressID;
+                    db.UpdateOrder(order);
+                }
+                else
+                {
+                    intAddressID = db.InsertAddress(EnteredAddress);
+                    order.intShippingAddressID = intAddressID;
+                    db.UpdateOrder(order);
+                }
+
+                return RedirectToAction("Payment");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public ActionResult PaymentWithPayPal(string Cancel = null)
+        {
+            // Getting the API Context
+            APIContext apiContext = Models.CPaypalconfig.GetAPIContext();
+
+            try
+            {
+                // A resource representing a Payer that funds a payment PaymentMethod as PayPal
+                // PayerID will be returned when payment returns or click to pay
+                string payerID = Request.Params["PayerID"];
+
+                if (string.IsNullOrEmpty(payerID))
+                {
+                    //This section will be executed first because PayerID does not exist
+                    // it is returned by the create function call of the payment class
+                    // Creating a payment
+                    // baseURL is the url on which PayPal sends back the data.
+                    string baseURI = Request.Url.Scheme + "://" + Request.Url.Authority + "/Cart/PaymentWithPayPal?";
+                    // Here we are generating guid for storing the PaymentID received in session
+                    // Which will be used in the payment execution
+                    var guid = Convert.ToString((new Random()).Next(100000));
+                    // Create Payment Function gives us the payment Approval
+                    // on which payer is redirected for paypal account payment
+                    var createdPayment = this.CreatePayment(apiContext, baseURI + "guid=" + guid);
+                    // Get links returned from PayPal in response to Create Function Call
+                    var Links = createdPayment.links.GetEnumerator();
+                    string paypalRedirectUrl = null;
+
+                    while (Links.MoveNext())
+                    {
+                        Links link = Links.Current;
+
+                        if (link.rel.ToLower().Trim().Equals("approval_url"))
+                        {
+                            // Saving Paypal direct URL to which user will be redirected for payment
+                            paypalRedirectUrl = link.href;
+                        }
+                    }
+                    //Saving the PaymentID in the key guid
+                    Session.Add(guid, createdPayment.id);
+
+                    return Redirect(paypalRedirectUrl);
+
+                }
+                else
+                {
+                    // this function executes after recieving all parameters for the payment
+                    var guid = Request.Params["guid"];
+                    var executedPayment = ExecutePayment(apiContext, payerID, Session[guid] as string);
+                    // If executed Payment failed then we will show payment faileure message to user
+
+                    if (executedPayment.state.ToLower() != "approved")
+                    {
+                        return View("FailureView");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return View("FailureView");
+            }
+            // On succesful Payment, Show Success page to User
+            return View("SucessView");
+        }
+
+        private PayPal.Api.Payment payment;
+
+        private Payment ExecutePayment(APIContext apiContext, string payerId, string paymentId)
+        {
+            var paymentExecution = new PaymentExecution()
+            {
+                payer_id = payerId
+            };
+
+            this.payment = new Payment()
+            {
+                id = paymentId
+            };
+
+            return this.payment.Execute(apiContext, paymentExecution);
+        }
+
+        private Payment CreatePayment(APIContext apiContext, string redirectUrl)
+        {
+            // create Item List and Add Item objects to it
+            var itemList = new ItemList()
+            {
+                items = new List<Item>()
+            };
+            // Adding Item Details (name. currency, price etc.
+            itemList.items.Add(new Item()
+            {
+                name = "Name Here",
+                currency = "USD",
+                price = "1",
+                quantity = "1",
+                sku = "sku",
+            });
+
+            var payer = new Payer()
+            {
+                payment_method = "paypal"
+            };
+
+            // configure Redirect URLs here with RedirectURL object
+            var redirectUrls = new RedirectUrls()
+            {
+                cancel_url = redirectUrl + "&cancel=true",
+                return_url = redirectUrl
+            };
+
+            // Adding Tax, shipping and subtotal details
+            var details = new Details()
+            {
+                tax = "1",
+                shipping = "1",
+                subtotal = "1",
+            };
+
+            // final amount with details
+            var amount = new Amount()
+            {
+                currency = "USD",
+                total = "3", //Total must be sum of Subtotal, shipping, and Tax
+                details = details
+            };
+
+            var transactionList = new List<Transaction>();
+            // Adding Transaaction Description
+            transactionList.Add(new Transaction()
+            {
+                description = "transaction Description",
+                invoice_number = "Your generated invoice number",
+                amount = amount,
+                item_list = itemList
+            });
+
+            this.payment = new Payment()
+            {
+                intent = "sale",
+                payer = payer,
+                transactions = transactionList,
+                redirect_urls = redirectUrls
+
+            };
+
+            // Create a payment using an APIContext
+            return this.payment.Create(apiContext);
+
+        }
+    }
 }

@@ -2,6 +2,8 @@
 
 <html>
 <head>
+    <!-- Load icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.Title</title>
     @Styles.Render("~/Content/css")
@@ -10,9 +12,12 @@
 </head>
 <body>
     <div id="home-header">
-        <h1 id="layout-h1">Moxy Treasures</h1>
+
         <div>
-            <div class="topnav" id="myTopnav" style="display:inline-block; color:white">
+            <h1 id="layout-h1">Moxy Treasures</h1>
+        </div>
+        <div style="display:inline-block; color:white;">
+            <div style="display:inline-block;" class="topnav" id="myTopnav">
                 @Html.ActionLink("Home", "Main", "Home")
                 @Html.ActionLink("About", "About", "Home")
                 @if (Model.UserID == 0)
@@ -36,6 +41,12 @@
                 }
                 <a href="javascript:void(0);" class="icon" onclick="myFunction()">&#9776;</a>
             </div>
+        </div>
+        <div style="display:inline-block;">
+            <form class="example" action="action_page.php" style="float:left; width:210px">
+                <input id="search" type="text" placeholder="Search..">
+                <button type="submit"><i class="fa fa-search"></i></button>
+            </form>
         </div>
     </div>
 

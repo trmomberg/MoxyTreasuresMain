@@ -22,7 +22,7 @@
                 <div class="section">
                     <div class="item">
                         <div>@Html.LabelFor(Model => Model.Products[0].Price)</div>
-                        <div width="6em" border="2px solid black">@Html.TextBoxFor(Model => Model.Products[0].Price, new { @readonly = true })</div>
+                        <div width="6em" border="2px solid black">@Html.TextBoxFor(Model => Model.Products[0].Price, "{0:c}", new { @readonly = true })</div>
                     </div>
                 </div>
                 <div class="section">

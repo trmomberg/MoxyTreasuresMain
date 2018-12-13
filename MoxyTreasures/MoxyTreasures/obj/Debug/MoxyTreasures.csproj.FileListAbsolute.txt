@@ -40,6 +40,7 @@ C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\Microsoft.O
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\Microsoft.Web.Infrastructure.dll
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\Newtonsoft.Json.dll
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\Owin.dll
+C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\PayPal.dll
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\System.Web.Helpers.dll
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\System.Web.Mvc.dll
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\System.Web.Optimization.dll
@@ -54,6 +55,8 @@ C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\Microsoft.A
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\Microsoft.AI.WindowsServer.xml
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\Microsoft.ApplicationInsights.xml
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\Newtonsoft.Json.xml
+C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\PayPal.xml
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\System.Web.Helpers.xml
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\System.Web.Mvc.xml
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\System.Web.Razor.xml
@@ -62,7 +65,6 @@ C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\System.Web.
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\System.Web.WebPages.Razor.xml
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\System.Web.Optimization.xml
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\Antlr3.Runtime.pdb
-C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\Newtonsoft.Json.xml
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\EntityFramework.xml
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\EntityFramework.SqlServer.xml
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\Microsoft.AspNet.Identity.Core.xml

@@ -91,6 +91,7 @@ namespace MoxyTreasures.Models
 		public ActionStatusTypes ActionStatus { get; set; }
 		public List<CProduct> ProductList = new List<CProduct>();
 		public List<CProduct> Cart = new List<CProduct>();
+        public List<CAddress> AddressList = new List<CAddress>();
 
         [DisplayName("Sub Total:")]
         public double CartSubTotal { get; set; }
