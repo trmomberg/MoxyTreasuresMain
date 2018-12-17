@@ -1,0 +1,32 @@
+﻿@model MoxyTreasures.Models.CUser
+@{
+    ViewBag.Title = "Confirmation";
+    Layout = "~/Views/Shared/_LayoutUser.cshtml";
+}
+<div class="middle">
+    <h2>Thank you for shopping at MoxyTreasures!</h2>
+    <p>Below is your order information</p>
+    <div>
+
+        @foreach (MoxyTreasures.Models.CProduct p in Model.Cart)
+        {
+            <div class="product-small center">
+                @if (p.PrimaryImage != null)
+                {
+                    <a href="@Url.Action("ProductDetails", "Home", new { id = p.ProductID })">
+                        <div><img class="thumbnail" src="@string.Concat("data:Image/", p.PrimaryImage.GetShortExtension, ";base64,", p.PrimaryImage.BytesBase64)" /></div>
+                    </a>
+                }
+                <div class="center cut-text">@p.Title</div>
+                <div class="center">@p.Price.ToString("$#,###.00")</div>
+            </div>
+        }
+        @if (Model.CartSubTotal > 0)
+        {
+            <div class="Section">
+                <div class="top">Total:</div>
+                <div>@Html.TextBoxFor(Model => Model.CartSubTotal, "{0:c}", new { @readonly = true, @class = "TextBoxAsLabel" })</div>
+            </div>
+        }
+    </div>
+</div>

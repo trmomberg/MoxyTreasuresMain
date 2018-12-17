@@ -46,6 +46,30 @@ namespace MoxyTreasures.Controllers
             return View(User);
         }
 
+        public ActionResult Confirmation()
+        {
+            int ID = Convert.ToInt32(RouteData.Values["ID"]);
+            Models.CUser User = new Models.CUser();
+            Models.COrder order = new Models.COrder();
+            Models.CDatabase db = new Models.CDatabase();
+            List<Models.CProduct> productList = new List<Models.CProduct>();
+            User = User.GetCurrentUser();
+            order = Models.COrder.GetOrder(0, User.UserID, 1);
+            productList = db.GetCart(User.UserID);
+
+            // Update Order Information
+            order.intStatusID = 2;
+            db.UpdateOrder(order);
+
+            // Update Product Stock amount
+            foreach (Models.CProduct product in productList)
+            {
+                product.intStockAmount = product.intStockAmount - 1;
+                db.UpdateProduct(product);
+            }
+            return View(User);
+        }
+
         public ActionResult Data()
         {
             Models.CUser User = new Models.CUser();
@@ -115,6 +139,21 @@ namespace MoxyTreasures.Controllers
 				return null;
 			}
 		}
+
+        [HttpPost]
+        public ActionResult Payment(FormCollection Collection)
+        {
+
+            //if returnvalue == 'Approved'
+            //  SuccessPage
+
+            //'Failed' 
+
+            //
+            Models.CUser User = new Models.CUser();
+            User = User.GetCurrentUser();
+            return View(User);
+        }
 
         [HttpPost]
         public JsonResult Categories(string strtranstype, string strCategory = "", int intCategoryID = 0)

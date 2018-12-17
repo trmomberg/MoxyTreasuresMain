@@ -139,7 +139,8 @@ namespace MoxyTreasures.Models
 						Product.Description = (dr["strDescription"]).ToString();
 						Product.Price = Convert.ToDouble((dr["intPrice"]));
 						Product.CategoryID = Convert.ToInt32((dr["intCategoryID"]));
-						Product.PrimaryImage = GetPrimaryImage(Product.ProductID);
+                        Product.intStockAmount = Convert.ToInt32((dr["intStockAmount"]));
+                        Product.PrimaryImage = GetPrimaryImage(Product.ProductID);
 
 					}
 

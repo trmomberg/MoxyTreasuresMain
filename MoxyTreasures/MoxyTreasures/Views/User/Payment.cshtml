@@ -6,5 +6,52 @@
 <div class="middle">
     <h2>Payment</h2>
 
+    <p>Your total is $@Model.CartSubTotal. Click below to begin payment.</p>
+    
+    <div id="paypal-button"></div>
+    <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+    <script>
+                paypal.Button.render({
+                    // Configure environment
+                    env: 'sandbox',
+                    client: {
+                        sandbox: 'AaWS9CscTguDn-51bVHfoEZxCW2z9TsRi5A7fn5tBb938DJq01jYvPesbhiJskT_NLEyIdRw2FCBwd0V',
+                        production: 'EI_dGPytaU-VWvBXFVwgJS_slgcLLQT0wAftjZY7o6FnH6c7rQgh4hsQ1OM8eWHW1EFDPrn92VDu-brS'
+                    },
+                    // Customize button (optional)
+                    locale: 'en_US',
+                    style: {
+                        size: 'small',
+                        color: 'gold',
+                        shape: 'pill',
+                    },
+
+                    // Enable Pay Now checkout flow (optional)
+                    commit: true,
+
+                    // Set up a payment
+                    payment: function (data, actions) {
+                        return actions.payment.create({
+                            transactions: [{
+                                amount: {
+                                    total: @Model.CartSubTotal,
+                                    currency: 'USD',
+
+                                }
+                            }]
+                        });
+                    },
+                    // Execute the payment
+                    onAuthorize: function (data, actions) {
+                        return actions.payment.execute().then(function () {
+                            // Show a confirmation message to the buyer
+                            window.alert('Thank you for your purchase!');
+                            window.location.href="@Url.Action("Confirmation", "User", new { ID = 1})";
+                        });
+                    }
+                }, '#paypal-button');
+
+    </script>
+
 </div>
     

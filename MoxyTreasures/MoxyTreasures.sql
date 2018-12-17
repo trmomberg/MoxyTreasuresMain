@@ -1285,24 +1285,24 @@ GO
 -- --------------------------------------------------
 
 EXEC uspAddUser
-	@strFirstName		= 'Todd',
-	@strLastName		= 'Momberg',
-	@strEmailAddress	= 'Todd0929971@gmail.com',
+	@strFirstName		= 'Moxy',
+	@strLastName		= 'Admin',
+	@strEmailAddress	= 'admin@admin.com',
 	@strPassword		= '12345',
 	@strStreetAddress   = '',
 	@strCity			= '',
 	@dtmDateOfBirth     = '',
 	@intStateID         = 1,
 	@intGenderID        = 1,
-	@strZipCode		    = '45251',
+	@strZipCode		    = '',
 	@blnAdmin			= 1,
 	@blnEmailList		= 1
 
 EXEC uspAddUser
-	@strFirstName		= '1',
-	@strLastName		= '2',
-	@strEmailAddress	= '123',
-	@strPassword		= '321',
+	@strFirstName		= '',
+	@strLastName		= '',
+	@strEmailAddress	= 'user@user.com',
+	@strPassword		= '12345',
 	@strCity			= '',
 	@strStreetAddress   = '',
 	@dtmDateOfBirth     = '09/29/1997',

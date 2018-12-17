@@ -79,8 +79,8 @@ C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\Microsoft.O
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\Microsoft.Owin.Security.Google.xml
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\Microsoft.Owin.Security.Twitter.xml
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
-C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\obj\Debug\MoxyTreasures.csprojAssemblyReference.cache
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\obj\Debug\MoxyTreasures.csproj.CoreCompileInputs.cache
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\obj\Debug\MoxyTreasures.csproj.CopyComplete
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\obj\Debug\MoxyTreasures.dll
 C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\obj\Debug\MoxyTreasures.pdb
+C:\Users\todd0\Desktop\MoxyTreasures\MoxyTreasures\MoxyTreasures\obj\Debug\MoxyTreasures.csprojAssemblyReference.cache

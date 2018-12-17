@@ -274,6 +274,7 @@
     <Content Include="Views\Home\Main.cshtml" />
     <Content Include="Views\User\Addresses.cshtml" />
     <Content Include="Views\User\Payment.cshtml" />
+    <Content Include="Views\User\Confirmation.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
